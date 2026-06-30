@@ -245,9 +245,15 @@ app.patch('/api/admin/orders/:id', requireAuth, async (req, res) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`==================================================`);
-  console.log(`Mercury Dry Cleaners backend is active with Firebase!`);
-  console.log(`Running on: http://localhost:${PORT}`);
-  console.log(`==================================================`);
-});
+// Only start the server listening if not imported as a Vercel serverless function
+if (process.env.NODE_ENV !== 'production' || process.env.PORT) {
+  app.listen(PORT, () => {
+    console.log(`==================================================`);
+    console.log(`Mercury Dry Cleaners backend is active with Firebase!`);
+    console.log(`Running on: http://localhost:${PORT}`);
+    console.log(`==================================================`);
+  });
+}
+
+module.exports = app;
+
