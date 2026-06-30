@@ -1,14 +1,15 @@
+require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 const path = require('path');
 const db = require('./database');
+const { auth } = require('./firebase');
+const { signInWithEmailAndPassword } = require('firebase/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Session store
+// Session store (in-memory mapping of session tokens to authenticated user emails)
 const SESSIONS = new Map();
 
 // Middleware
@@ -16,6 +17,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Connect database client (Trigger Firestore check & seed)
+db.connectDB();
 
 // Authentication middleware
 function requireAuth(req, res, next) {
@@ -29,7 +33,7 @@ function requireAuth(req, res, next) {
   session.expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
   SESSIONS.set(token, session);
   
-  req.adminUser = session.username;
+  req.adminUser = session.email;
   next();
 }
 
@@ -46,7 +50,7 @@ setInterval(() => {
 // --- API ROUTES ---
 
 // 1. Submit a pickup request (Public)
-app.post('/api/orders/pickup', (req, res) => {
+app.post('/api/orders/pickup', async (req, res) => {
   try {
     const {
       customerName,
@@ -64,7 +68,7 @@ app.post('/api/orders/pickup', (req, res) => {
       return res.status(400).json({ error: 'Required fields are missing.' });
     }
 
-    const order = db.createOrder({
+    const order = await db.createOrder({
       customerName,
       phone,
       email: email || '',
@@ -87,14 +91,14 @@ app.post('/api/orders/pickup', (req, res) => {
 });
 
 // 2. Track an order by ID or phone number (Public)
-app.get('/api/orders/track', (req, res) => {
+app.get('/api/orders/track', async (req, res) => {
   try {
     const query = req.query.q;
     if (!query) {
       return res.status(400).json({ error: 'Search query is required.' });
     }
 
-    const order = db.findOrder(query);
+    const order = await db.findOrder(query);
     if (!order) {
       return res.status(404).json({ error: 'No order found matching your query.' });
     }
@@ -106,39 +110,58 @@ app.get('/api/orders/track', (req, res) => {
   }
 });
 
-// 3. Admin Login
-app.post('/api/auth/login', (req, res) => {
+// 3. Admin Login (Authenticates via Firebase Authentication)
+app.post('/api/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password are required.' });
+      return res.status(400).json({ error: 'Username/Email and password are required.' });
     }
 
-    const admins = db.getAdmins();
-    const admin = admins.find(a => a.username.toLowerCase() === username.trim().toLowerCase());
+    // Map default admin username to full email for Firebase Auth
+    const email = username.includes('@') 
+      ? username.trim() 
+      : `${username.trim().toLowerCase()}@mercurydrycleaners.com`;
 
-    if (!admin || !bcrypt.compareSync(password, admin.passwordHash)) {
-      return res.status(401).json({ error: 'Invalid username or password.' });
-    }
+    // Perform Firebase Authentication sign-in
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-    // Generate random secure token
+    // Generate secure session token mapping to this session
+    const crypto = require('crypto');
     const token = crypto.randomBytes(32).toString('hex');
+    
     SESSIONS.set(token, {
-      username: admin.username,
+      email: user.email,
       expiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
     });
 
-    // Set HTTP-only cookie
+    // Set secure cookie
     res.cookie('session_token', token, {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
+      secure: false, // Set to true if deploying with HTTPS
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 
-    res.json({ success: true, message: 'Logged in successfully.' });
+    res.json({ 
+      success: true, 
+      message: 'Logged in successfully via Firebase Auth.',
+      user: { email: user.email }
+    });
   } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ error: 'An error occurred during authentication.' });
+    console.error('Firebase Auth error:', err.message);
+    
+    // Provide user friendly message depending on Firebase Auth errors
+    let clientMessage = 'Invalid username/email or password.';
+    if (err.code === 'auth/invalid-credential') {
+      clientMessage = 'Invalid credentials. Please verify your account password.';
+    } else if (err.code === 'auth/user-not-found') {
+      clientMessage = 'No administrative account found with those details.';
+    } else if (err.code === 'auth/network-request-failed') {
+      clientMessage = 'Authentication server connection error. Verify your internet connection.';
+    }
+    
+    res.status(401).json({ error: clientMessage });
   }
 });
 
@@ -152,20 +175,24 @@ app.post('/api/auth/logout', (req, res) => {
   res.json({ success: true, message: 'Logged out successfully.' });
 });
 
-// 5. Check Session Status (Public API helper for frontend redirect logic)
+// 5. Check Session Status
 app.get('/api/auth/status', (req, res) => {
   const token = req.cookies.session_token;
   if (token && SESSIONS.has(token)) {
-    return res.json({ authenticated: true, username: SESSIONS.get(token).username });
+    const session = SESSIONS.get(token);
+    // Display short name
+    const shortName = session.email.split('@')[0];
+    return res.json({ authenticated: true, username: shortName });
   }
   res.json({ authenticated: false });
 });
 
 // 6. Get All Orders (Admin Protected)
-app.get('/api/admin/orders', requireAuth, (req, res) => {
+app.get('/api/admin/orders', requireAuth, async (req, res) => {
   try {
-    const orders = db.getOrders();
-    // Sort orders: Scheduled first (by pickup date desc), then active, then completed
+    const orders = await db.getOrders();
+    
+    // Sort orders: Scheduled first, then Picked Up, In Cleaning, Ready, and Completed last
     const statusPriority = {
       'Scheduled': 1,
       'Picked Up': 2,
@@ -191,7 +218,7 @@ app.get('/api/admin/orders', requireAuth, (req, res) => {
 });
 
 // 7. Update Order Status (Admin Protected)
-app.patch('/api/admin/orders/:id', requireAuth, (req, res) => {
+app.patch('/api/admin/orders/:id', requireAuth, async (req, res) => {
   try {
     const orderId = req.params.id;
     const { status } = req.body;
@@ -201,7 +228,7 @@ app.patch('/api/admin/orders/:id', requireAuth, (req, res) => {
       return res.status(400).json({ error: 'Invalid order status.' });
     }
 
-    const updatedOrder = db.updateOrderStatus(orderId, status);
+    const updatedOrder = await db.updateOrderStatus(orderId, status);
     if (!updatedOrder) {
       return res.status(404).json({ error: 'Order not found.' });
     }
@@ -219,8 +246,8 @@ app.patch('/api/admin/orders/:id', requireAuth, (req, res) => {
 
 // Start Server
 app.listen(PORT, () => {
-  console.log(`========================================`);
-  console.log(`Mercury Dry Cleaners backend is active!`);
+  console.log(`==================================================`);
+  console.log(`Mercury Dry Cleaners backend is active with Firebase!`);
   console.log(`Running on: http://localhost:${PORT}`);
-  console.log(`========================================`);
+  console.log(`==================================================`);
 });
