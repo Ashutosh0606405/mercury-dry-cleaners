@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Access Portal | Mercury Dry Cleaners</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body style="min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+  <div class="glow-bg"></div>
+  <div class="glow-bg-right"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="navbar">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">M</div>
+        Mercury <span>Dry Cleaners</span>
+      </a>
+      <a href="index.html" class="btn-secondary">Back to Site</a>
+    </div>
+  </header>
+
+  <!-- Login/Signup Panel -->
+  <main style="max-width: 450px; width: 100%; margin: 3rem auto; padding: 0 1.5rem;">
+    <div class="glass-panel" style="border-radius: 24px;">
+      
+      <!-- Panel Header Toggle -->
+      <div style="display: flex; background: rgba(15, 23, 42, 0.6); padding: 0.25rem; border-radius: 9999px; margin-bottom: 2rem; border: 1px solid var(--border-color);">
+        <button id="tab-login" class="btn-primary" style="flex: 1; border-radius: 9999px; padding: 0.6rem 0; justify-content: center; font-size: 0.9rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);">Sign In</button>
+        <button id="tab-register" class="btn-secondary" style="flex: 1; border-radius: 9999px; padding: 0.6rem 0; justify-content: center; font-size: 0.9rem; border: none;">Register</button>
+      </div>
+
+      <div id="error-container" style="display: none; background: var(--error-glow); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--error); padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>⚠️</span> <span id="error-text">An error occurred.</span>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="login-form" novalidate>
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <h2 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 0.25rem;">Welcome Back</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Log in to schedule new pickups and track your laundry history</p>
+        </div>
+
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" required placeholder="e.g. john@example.com">
+          <span class="form-error">❌ Enter a valid email address.</span>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.75rem;">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••">
+          <span class="form-error">❌ Enter your password.</span>
+        </div>
+
+        <button type="submit" id="login-submit-btn" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.9rem; border-radius: 10px; font-size: 1rem;">
+          Sign In to Portal
+        </button>
+      </form>
+
+      <!-- Register Form (Hidden by default) -->
+      <form id="register-form" style="display: none;" novalidate>
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <h2 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 0.25rem;">Create Account</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Register with your email to claim your garment tracking records</p>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" required minlength="2" placeholder="e.g. John Doe">
+          <span class="form-error">❌ Enter your full name.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" required placeholder="e.g. john@example.com">
+          <span class="form-error">❌ Enter a valid email address.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-phone">Phone Number</label>
+          <input type="tel" id="reg-phone" required pattern="[0-9]{3}-[0-9]{4}|[0-9]{10}" placeholder="e.g. 555-0100">
+          <span class="form-error">❌ Enter a valid 10-digit phone number.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" required minlength="6" placeholder="Min 6 characters">
+          <span class="form-error">❌ Password must be at least 6 characters.</span>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.75rem;">
+          <label for="reg-password-conf">Confirm Password</label>
+          <input type="password" id="reg-password-conf" required placeholder="Re-enter password">
+          <span class="form-error">❌ Passwords do not match.</span>
+        </div>
+
+        <button type="submit" id="reg-submit-btn" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.9rem; border-radius: 10px; font-size: 1rem;">
+          Register & Log In
+        </button>
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Mercury Dry Cleaners. Customer Portal.</p>
+  </footer>
+
+  <!-- Script Modules -->
+  <script type="module" src="js/customer.js"></script>
+</body>
+</html>

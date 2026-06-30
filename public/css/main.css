@@ -868,3 +868,25 @@ footer {
 footer p {
   margin-bottom: 0.5rem;
 }
+
+/* Customer Portal Specific Styles */
+#customer-name {
+  font-weight: 800;
+}
+
+#empty-state {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Clientside input error validation display */
+input[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-color: var(--error) !important;
+  background-color: var(--error-glow) !important;
+}
+
+input[aria-invalid="true"] ~ .form-error,
+select[aria-invalid="true"] ~ .form-error {
+  display: flex !important;
+}
+
