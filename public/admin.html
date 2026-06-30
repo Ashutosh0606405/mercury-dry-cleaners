@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Operations Control</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body style="min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+  <div class="glow-bg"></div>
+  <div class="glow-bg-right"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="navbar">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">M</div>
+        Mercury <span>Operations</span>
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><span id="session-username" style="color:var(--primary); font-weight:600; font-size:0.9rem;">Admin Account</span></li>
+          <li><button id="logout-btn" class="btn-secondary" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 9999px;">Logout</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Dashboard Container -->
+  <main class="section" style="flex:1; width:100%; max-width:1200px; margin:0 auto; padding-top:4rem;">
+    <div class="section-header" style="text-align:left; align-items:flex-start; margin-bottom:2.5rem;">
+      <h2 class="section-title">Order Operations</h2>
+      <p class="section-subtitle">Real-time status updates, scheduled customer pickups, and garment cleaning queue management.</p>
+    </div>
+
+    <!-- Stats summary panels -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.5rem; margin-bottom:2.5rem;">
+      <div class="glass-panel" style="padding:1.5rem; text-align:center;">
+        <span style="font-size:0.8rem; text-transform:uppercase; color:var(--text-muted); font-weight:600;">Total Active</span>
+        <h3 id="stat-total" style="font-size:2.25rem; color:white; font-family:var(--font-heading); margin-top:0.25rem;">0</h3>
+      </div>
+      <div class="glass-panel" style="padding:1.5rem; text-align:center;">
+        <span style="font-size:0.8rem; text-transform:uppercase; color:var(--warning); font-weight:600;">Scheduled</span>
+        <h3 id="stat-scheduled" style="font-size:2.25rem; color:var(--warning); font-family:var(--font-heading); margin-top:0.25rem;">0</h3>
+      </div>
+      <div class="glass-panel" style="padding:1.5rem; text-align:center;">
+        <span style="font-size:0.8rem; text-transform:uppercase; color:#c084fc; font-weight:600;">In Cleaning</span>
+        <h3 id="stat-cleaning" style="font-size:2.25rem; color:#c084fc; font-family:var(--font-heading); margin-top:0.25rem;">0</h3>
+      </div>
+      <div class="glass-panel" style="padding:1.5rem; text-align:center; border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.05);">
+        <span style="font-size:0.8rem; text-transform:uppercase; color:var(--success); font-weight:600;">Ready for Pickup</span>
+        <h3 id="stat-ready" style="font-size:2.25rem; color:var(--success); font-family:var(--font-heading); margin-top:0.25rem;">0</h3>
+      </div>
+    </div>
+
+    <!-- Controls / Filters -->
+    <div class="admin-header-actions">
+      <div class="admin-search search-bar" style="margin-bottom:0;">
+        <input type="text" id="admin-search-input" placeholder="Search customer, ID, phone..." autocomplete="off">
+      </div>
+      
+      <div style="display:flex; gap:0.75rem; align-items:center;">
+        <span style="font-size:0.85rem; color:var(--text-muted); font-weight:500;">Filter Status:</span>
+        <select id="admin-filter-status" class="admin-select-status" style="padding: 0.6rem 1rem;">
+          <option value="ALL">Show All Orders</option>
+          <option value="Scheduled">Scheduled</option>
+          <option value="Picked Up">Picked Up</option>
+          <option value="In Cleaning">In Cleaning</option>
+          <option value="Ready">Ready</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Table content -->
+    <div class="admin-table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Pickup Schedule</th>
+            <th>Items</th>
+            <th>Instructions</th>
+            <th>Status Update</th>
+          </tr>
+        </thead>
+        <tbody id="orders-tbody">
+          <!-- Dynamically filled by JavaScript -->
+          <tr>
+            <td colspan="6" style="text-align:center; padding:3rem; color:var(--text-muted);">
+              Loading operations logs...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Mercury Dry Cleaners. Operations Dashboard.</p>
+  </footer>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

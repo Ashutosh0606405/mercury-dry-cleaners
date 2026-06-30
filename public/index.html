@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mercury Dry Cleaners | Premium Eco-Friendly Garment Care</title>
+  <meta name="description" content="Luxurious, eco-friendly dry cleaning and garment care with free doorstep pickup and delivery. Track your garments in real-time.">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div class="glow-bg"></div>
+  <div class="glow-bg-right"></div>
+
+  <!-- Header Section -->
+  <header>
+    <div class="navbar">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">M</div>
+        Mercury <span>Dry Cleaners</span>
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#schedule">Schedule Pickup</a></li>
+          <li><a href="track.html">Track Order</a></li>
+          <li><a href="admin-login.html" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Staff Login</a></li>
+        </ul>
+      </nav>
+      <a href="#schedule" class="btn-primary">Schedule Pickup</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-tag">Premium Garment Care</div>
+      <h1 class="hero-title">Bespoke Dry Cleaning <span>Delivered To Your Door</span></h1>
+      <p class="hero-description">Experience luxurious care for your finest garments. With our eco-friendly cleaning solvents, expert pressers, and live tracking, fabric care has never been this seamless.</p>
+      <div class="hero-actions">
+        <a href="#schedule" class="btn-primary">Schedule Pickup</a>
+        <a href="track.html" class="btn-secondary">Track Garments</a>
+      </div>
+    </div>
+    <div class="hero-image-container">
+      <div class="hero-image-mockup">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:1rem;">
+          <div>
+            <h4 style="font-family:var(--font-heading); font-size:1.1rem;">Live Order Tracking</h4>
+            <p style="font-size:0.75rem; color:var(--text-muted);">MERC-9104 &bull; Elena Rostova</p>
+          </div>
+          <span class="badge badge-ready">Garments Ready</span>
+        </div>
+        <div style="margin: 1.5rem 0; flex:1; display:flex; flex-direction:column; justify-content:center; gap:0.5rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted);">
+            <span>Picked Up</span>
+            <span>In Cleaning</span>
+            <span style="color:var(--success); font-weight:600;">Ready</span>
+          </div>
+          <div style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; position:relative; overflow:hidden;">
+            <div style="position:absolute; height:100%; width:80%; background:linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);"></div>
+          </div>
+        </div>
+        <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.4; border-top:1px solid rgba(255,255,255,0.06); padding-top:1rem; display:flex; justify-content:space-between; align-items:center;">
+          <span>Collection: Silk Dress, Gown</span>
+          <span style="font-weight:600; color:white;">555-0188</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="section">
+    <div class="section-header">
+      <h2 class="section-title">Our Premium Services</h2>
+      <p class="section-subtitle">We employ state-of-the-art technologies and gentle, eco-friendly solvents to extend the lifespan of your finest garments.</p>
+    </div>
+    <div class="services-grid">
+      <div class="glass-panel service-card">
+        <div class="service-icon">✨</div>
+        <h3>Bespoke Dry Cleaning</h3>
+        <p>Premium dry cleaning for suits, coats, dresses, and formal wear. We use biodegradable solvents that are tough on stains but exceptionally gentle on delicate fabrics.</p>
+      </div>
+      <div class="glass-panel service-card">
+        <div class="service-icon">💧</div>
+        <h3>Eco-Friendly Wet Cleaning</h3>
+        <p>Advanced water-based cleaning technique for cashmere, silk, and wool. Safe for sensitive skin and leaves garments feeling clean, soft, and smelling completely fresh.</p>
+      </div>
+      <div class="glass-panel service-card">
+        <div class="service-icon">👔</div>
+        <h3>Professional Pressing</h3>
+        <p>Crisp collar pressing, hand finishing, and professional steam shaping. Every garment is returned on wooden hangers, perfectly formed and ready to wear.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Booking / Pickup Scheduling Section -->
+  <section id="schedule" class="section booking-section">
+    <div class="section-header">
+      <h2 class="section-title">Schedule a Pickup</h2>
+      <p class="section-subtitle">Select a convenient pickup time. Our concierge will collect your garments, handle them with absolute care, and deliver them back when they are ready.</p>
+    </div>
+    <div class="booking-container">
+      <div class="glass-panel">
+        <form id="pickup-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="customerName">Full Name</label>
+              <input type="text" id="customerName" name="customerName" placeholder="e.g. John Doe" required minlength="2">
+              <span class="form-hint">Must be at least 2 characters</span>
+              <span class="form-error">❌ Please enter your name.</span>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="e.g. 555-0100" required pattern="[0-9]{3}-[0-9]{4}|[0-9]{10}">
+              <span class="form-hint">Format: 555-0100 or 10 digits</span>
+              <span class="form-error">❌ Please enter a valid phone number.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="e.g. john@example.com" required>
+            <span class="form-hint">For order notifications and tracking link</span>
+            <span class="form-error">❌ Please enter a valid email address.</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="pickupDate">Pickup Date</label>
+              <input type="date" id="pickupDate" name="pickupDate" required>
+              <span class="form-hint">Available Monday to Saturday</span>
+              <span class="form-error">❌ Please select a date in the future.</span>
+            </div>
+            <div class="form-group">
+              <label for="pickupTime">Pickup Time Window</label>
+              <select id="pickupTime" name="pickupTime" required>
+                <option value="" disabled selected>Select a time window</option>
+                <option value="09:00 - 11:00">09:00 - 11:00 (Morning)</option>
+                <option value="11:00 - 13:00">11:00 - 13:00 (Mid-Day)</option>
+                <option value="14:00 - 16:00">14:00 - 16:00 (Afternoon)</option>
+                <option value="16:00 - 18:00">16:00 - 18:00 (Late Afternoon)</option>
+              </select>
+              <span class="form-hint">Concierge 2-hour window</span>
+              <span class="form-error">❌ Please select a time slot.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Select Garment Types</label>
+            <div class="garment-grid">
+              <div class="garment-checkbox">
+                <input type="checkbox" id="g-suits" name="garmentTypes" value="Suits">
+                <label for="g-suits" class="garment-label">💼 Suits</label>
+              </div>
+              <div class="garment-checkbox">
+                <input type="checkbox" id="g-shirts" name="garmentTypes" value="Shirts">
+                <label for="g-shirts" class="garment-label">👔 Shirts</label>
+              </div>
+              <div class="garment-checkbox">
+                <input type="checkbox" id="g-dresses" name="garmentTypes" value="Dresses">
+                <label for="g-dresses" class="garment-label">👗 Dresses</label>
+              </div>
+              <div class="garment-checkbox">
+                <input type="checkbox" id="g-coats" name="garmentTypes" value="Coats">
+                <label for="g-coats" class="garment-label">🧥 Coats</label>
+              </div>
+              <div class="garment-checkbox">
+                <input type="checkbox" id="g-trousers" name="garmentTypes" value="Trousers">
+                <label for="g-trousers" class="garment-label">👖 Trousers</label>
+              </div>
+              <div class="garment-checkbox">
+                <input type="checkbox" id="g-other" name="garmentTypes" value="Other">
+                <label for="g-other" class="garment-label">📦 Other Items</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem;">
+            <label for="garmentCount">Estimated Garment Count</label>
+            <input type="number" id="garmentCount" name="garmentCount" min="1" max="50" value="1" required>
+            <span class="form-hint">Total number of items for cleaning</span>
+            <span class="form-error">❌ Count must be between 1 and 50.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="specialInstructions">Special Fabric Care Instructions</label>
+            <textarea id="specialInstructions" name="specialInstructions" rows="3" placeholder="e.g. Silk lining on blazer, remove red wine stain on trousers, dry clean only."></textarea>
+          </div>
+
+          <button type="submit" id="submit-btn" class="btn-primary" style="width:100%; justify-content:center; padding:1rem; font-size:1.05rem; border-radius:12px;">
+            Book Pickup Request
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Success Modal Popup -->
+  <dialog id="confirmation-dialog" class="glass-panel" style="max-width:500px; margin:auto; border-radius:24px; padding:2.5rem; color:white; border: 1px solid var(--primary);">
+    <div style="text-align:center;">
+      <div style="width:64px; height:64px; border-radius:50%; background:var(--success-glow); color:var(--success); font-size:2rem; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">✓</div>
+      <h3 style="font-size:1.75rem; margin-bottom:0.5rem; font-family:var(--font-heading);">Pickup Booked!</h3>
+      <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:1.5rem;">Your concierge request has been accepted. We will see you on your scheduled pickup date.</p>
+      
+      <div style="background:rgba(15, 23, 42, 0.6); padding:1rem; border-radius:12px; border:1px solid var(--border-color); text-align:left; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+          <span style="color:var(--text-muted); font-size:0.85rem;">Order Track ID:</span>
+          <span id="conf-order-id" style="font-weight:700; color:var(--primary); font-family:var(--font-heading);">MERC-XXXX</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+          <span style="color:var(--text-muted); font-size:0.85rem;">Scheduled Date:</span>
+          <span id="conf-date" style="font-weight:600;">2026-07-01</span>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+          <span style="color:var(--text-muted); font-size:0.85rem;">Time Window:</span>
+          <span id="conf-time" style="font-weight:600;">10:00 - 12:00</span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:1rem;">
+        <a id="track-order-link" href="#" class="btn-primary" style="flex:1; justify-content:center;">Track Order Now</a>
+        <button id="close-dialog-btn" class="btn-secondary" style="flex:0.5; justify-content:center;">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Footer Section -->
+  <footer>
+    <p>&copy; 2026 Mercury Dry Cleaners. All rights reserved.</p>
+    <p style="font-size:0.75rem; color:var(--text-dark); margin-top:0.25rem;">Built using state-of-the-art eco-care technology. Licensed and insured.</p>
+  </footer>
+
+  <script src="js/booking.js"></script>
+</body>
+</html>

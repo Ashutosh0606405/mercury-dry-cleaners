@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Garments | Mercury Dry Cleaners</title>
+  <meta name="description" content="Track your dry cleaning order status in real-time. Simply enter your Order ID or phone number.">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div class="glow-bg"></div>
+  <div class="glow-bg-right"></div>
+
+  <!-- Header Section -->
+  <header>
+    <div class="navbar">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">M</div>
+        Mercury <span>Dry Cleaners</span>
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="index.html#services">Services</a></li>
+          <li><a href="index.html#schedule">Schedule Pickup</a></li>
+          <li><a href="track.html" class="active">Track Order</a></li>
+          <li><a href="admin-login.html" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Staff Login</a></li>
+        </ul>
+      </nav>
+      <a href="index.html#schedule" class="btn-primary">Schedule Pickup</a>
+    </div>
+  </header>
+
+  <!-- Track Page Content -->
+  <section class="section" style="min-height: calc(100vh - 250px); padding-top: 5rem;">
+    <div class="section-header">
+      <h2 class="section-title">Track Your Garments</h2>
+      <p class="section-subtitle">Enter your Order Tracking ID (e.g., MERC-8341) or the phone number associated with your booking to view live cleaning status.</p>
+    </div>
+
+    <div class="tracking-wrapper">
+      <!-- Search Input -->
+      <div class="search-bar">
+        <input type="text" id="track-input" placeholder="Enter Order ID or Phone number..." autocomplete="off">
+        <button id="track-btn" class="btn-primary">Search</button>
+      </div>
+
+      <!-- Welcome / Instruction State -->
+      <div id="tracker-welcome" class="glass-panel" style="text-align: center; padding: 3rem 2rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--text-dark);">🔍</div>
+        <h3 style="font-family: var(--font-heading); margin-bottom: 0.5rem;">Awaiting Search Input</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 400px; margin: 0 auto;">Enter your details above to check if your garments are clean, pressed, and ready for collection.</p>
+      </div>
+
+      <!-- Loading State -->
+      <div id="tracker-loading" class="glass-panel" style="display: none; text-align: center; padding: 3rem 2rem;">
+        <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid var(--border-color); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s infinite linear;"></div>
+        <h3 style="font-family: var(--font-heading); margin-top: 1rem;">Retrieving order data...</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">Checking the Mercury database</p>
+      </div>
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      <!-- Error State -->
+      <div id="tracker-error" class="glass-panel" style="display: none; text-align: center; padding: 3rem 2rem; border-color: rgba(239, 68, 68, 0.2);">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+        <h3 style="font-family: var(--font-heading); margin-bottom: 0.5rem; color: var(--error);">No Order Found</h3>
+        <p id="error-message-text" style="color: var(--text-muted); font-size: 0.95rem; max-width: 450px; margin: 0 auto; line-height: 1.5;"></p>
+      </div>
+
+      <!-- Tracking Results State -->
+      <div id="tracker-results" style="display: none;">
+        <!-- Status Card -->
+        <div class="glass-panel" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--primary); letter-spacing: 0.05em;">Order Tracking Code</span>
+              <h3 id="result-order-id" style="font-size: 1.75rem; font-family: var(--font-heading); margin-top: 0.15rem;">MERC-XXXX</h3>
+            </div>
+            <div id="result-badge-container">
+              <!-- Dynamically populated badge -->
+            </div>
+          </div>
+
+          <!-- Stepper Diagram -->
+          <div class="stepper">
+            <div class="stepper-progress" id="stepper-progress-bar"></div>
+            
+            <div class="step" id="step-scheduled">
+              <div class="step-icon">📅</div>
+              <div class="step-label">Scheduled</div>
+            </div>
+            
+            <div class="step" id="step-pickedup">
+              <div class="step-icon">🚚</div>
+              <div class="step-label">Picked Up</div>
+            </div>
+            
+            <div class="step" id="step-cleaning">
+              <div class="step-icon">🧼</div>
+              <div class="step-label">In Cleaning</div>
+            </div>
+            
+            <div class="step" id="step-ready">
+              <div class="step-icon">✨</div>
+              <div class="step-label">Ready</div>
+            </div>
+            
+            <div class="step" id="step-completed">
+              <div class="step-icon">✓</div>
+              <div class="step-label">Completed</div>
+            </div>
+          </div>
+          
+          <!-- Garments Ready Highlight Box (Conditional) -->
+          <div id="garment-ready-highlight" class="ready-alert" style="display: none;">
+            <div class="ready-alert-icon">🎉</div>
+            <div>
+              <h4 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 0.15rem;">Garments Clean & Ready!</h4>
+              <p style="font-size: 0.85rem; opacity: 0.9;">Your garments have passed quality checks. They are crisp, fresh, and ready for you to pick up (or for delivery concierge).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="glass-panel order-details-card">
+          <h4 style="font-family: var(--font-heading); font-size: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 0.5rem;">Order Details</h4>
+          
+          <div class="order-detail-row">
+            <span class="order-detail-label">Customer Name</span>
+            <span class="order-detail-value" id="detail-customer-name">John Doe</span>
+          </div>
+          
+          <div class="order-detail-row">
+            <span class="order-detail-label">Phone Number</span>
+            <span class="order-detail-value" id="detail-phone">555-0100</span>
+          </div>
+
+          <div class="order-detail-row">
+            <span class="order-detail-label">Email Address</span>
+            <span class="order-detail-value" id="detail-email">john@example.com</span>
+          </div>
+
+          <div class="order-detail-row">
+            <span class="order-detail-label">Scheduled Pickup Date</span>
+            <span class="order-detail-value" id="detail-pickup-date">2026-07-01</span>
+          </div>
+
+          <div class="order-detail-row">
+            <span class="order-detail-label">Pickup Time Slot</span>
+            <span class="order-detail-value" id="detail-pickup-time">10:00 - 12:00</span>
+          </div>
+
+          <div class="order-detail-row">
+            <span class="order-detail-label">Garment Count</span>
+            <span class="order-detail-value" id="detail-count">1 items</span>
+          </div>
+
+          <div class="order-detail-row">
+            <span class="order-detail-label">Garment Items</span>
+            <span class="order-detail-value" id="detail-types">Suits, Shirts</span>
+          </div>
+
+          <div class="form-group" style="margin-top: 1.5rem;">
+            <label>Special Instructions</label>
+            <p id="detail-special" style="font-size:0.9rem; color:var(--text-muted); background:rgba(15,23,42,0.4); padding:1rem; border-radius:10px; border:1px solid var(--border-color); min-height:60px; line-height:1.5;"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer>
+    <p>&copy; 2026 Mercury Dry Cleaners. All rights reserved.</p>
+    <p style="font-size:0.75rem; color:var(--text-dark); margin-top:0.25rem;">Built using state-of-the-art eco-care technology. Licensed and insured.</p>
+  </footer>
+
+  <script src="js/tracking.js"></script>
+</body>
+</html>
