@@ -73,9 +73,16 @@ document.addEventListener('DOMContentLoaded', () => {
       garmentTypes.push('General Garments');
     }
 
+    let phoneVal = document.getElementById('phone').value.trim().replace(/[\s-]/g, '');
+    if (phoneVal.length === 10 && !phoneVal.startsWith('+')) {
+      phoneVal = '+91' + phoneVal;
+    } else if (phoneVal.length === 12 && phoneVal.startsWith('91')) {
+      phoneVal = '+' + phoneVal;
+    }
+
     const formData = {
       customerName: document.getElementById('customerName').value,
-      phone: document.getElementById('phone').value,
+      phone: phoneVal,
       email: document.getElementById('email').value,
       pickupDate: document.getElementById('pickupDate').value,
       pickupTime: document.getElementById('pickupTime').value,

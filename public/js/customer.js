@@ -156,11 +156,17 @@ if (isLoginPage) {
   phoneSendBtn.addEventListener('click', async () => {
     if (errorContainer) errorContainer.style.display = 'none';
     
-    const phoneNumberValue = phoneInput.value.trim();
-    if (!phoneNumberValue || !phoneNumberValue.startsWith('+')) {
+    let phoneNumberValue = phoneInput.value.trim().replace(/[\s-]/g, '');
+    if (phoneNumberValue.length === 10 && !phoneNumberValue.startsWith('+')) {
+      phoneNumberValue = '+91' + phoneNumberValue;
+    } else if (phoneNumberValue.length === 12 && phoneNumberValue.startsWith('91')) {
+      phoneNumberValue = '+' + phoneNumberValue;
+    }
+
+    if (!phoneNumberValue || !phoneNumberValue.startsWith('+') || phoneNumberValue.length < 10) {
       phoneInput.setAttribute('aria-invalid', 'true');
       if (errorText) {
-        errorText.textContent = 'Country code is required (e.g. +91 or +1).';
+        errorText.textContent = 'Enter a valid Indian phone number (e.g. +91 99999-99999).';
         errorContainer.style.display = 'flex';
       }
       return;
@@ -348,7 +354,13 @@ if (isLoginPage) {
     try {
       const email = emailInput.value.trim();
       const name = nameInput.value.trim();
-      const phone = phoneInput.value.trim();
+      
+      let phone = phoneInput.value.trim().replace(/[\s-]/g, '');
+      if (phone.length === 10 && !phone.startsWith('+')) {
+        phone = '+91' + phone;
+      } else if (phone.length === 12 && phone.startsWith('91')) {
+        phone = '+' + phone;
+      }
       
       const userCredential = await createUserWithEmailAndPassword(auth, email, passwordInput.value);
       const user = userCredential.user;

@@ -112,9 +112,9 @@
             </div>
             <div class="form-group">
               <label for="phone">Phone Number</label>
-              <input type="tel" id="phone" name="phone" placeholder="e.g. 555-0100" required pattern="[0-9]{3}-[0-9]{4}|[0-9]{10}">
-              <span class="form-hint">Format: 555-0100 or 10 digits</span>
-              <span class="form-error">❌ Please enter a valid phone number.</span>
+              <input type="tel" id="phone" name="phone" value="+91 " placeholder="e.g. +91 9999999999" required pattern="\+91[0-9]{10}|\+91\s[0-9]{10}|[0-9]{10}">
+              <span class="form-hint">Format: +91 9999999999 or 10 digits</span>
+              <span class="form-error">❌ Please enter a valid Indian phone number.</span>
             </div>
           </div>
 
