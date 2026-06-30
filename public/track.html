@@ -24,7 +24,7 @@
           <li><a href="index.html#services">Services</a></li>
           <li><a href="index.html#schedule">Schedule Pickup</a></li>
           <li><a href="track.html" class="active">Track Order</a></li>
-          <li><a href="admin-login.html" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Staff Login</a></li>
+          <li><a href="customer-login.html" id="auth-nav-btn" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Sign In</a></li>
         </ul>
       </nav>
       <a href="index.html#schedule" class="btn-primary">Schedule Pickup</a>
@@ -180,5 +180,23 @@
   </footer>
 
   <script src="js/tracking.js"></script>
+
+  <!-- Dynamic session handler to switch Sign In to My Account -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { firebaseConfig } from "./js/firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const authBtn = document.getElementById('auth-nav-btn');
+
+    onAuthStateChanged(auth, (user) => {
+      if (user && authBtn) {
+        authBtn.textContent = 'My Account';
+        authBtn.href = 'customer.html';
+      }
+    });
+  </script>
 </body>
 </html>
