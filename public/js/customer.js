@@ -4,7 +4,11 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  RecaptchaVerifier,
+  signInWithPhoneNumber
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
   getFirestore, 
@@ -26,10 +30,29 @@ const db = getFirestore(app);
 // DOM Elements
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
+const phoneForm = document.getElementById('phone-form');
+const authTabs = document.getElementById('auth-tabs');
+const socialLoginSection = document.getElementById('social-login-section');
+
 const tabLogin = document.getElementById('tab-login');
 const tabRegister = document.getElementById('tab-register');
 const errorContainer = document.getElementById('error-container');
 const errorText = document.getElementById('error-text');
+
+// Form Switch Triggers
+const toPhoneBtn = document.getElementById('to-phone-btn');
+const toEmailBtn = document.getElementById('to-email-btn');
+const googleBtn = document.getElementById('google-btn');
+
+// Phone Flow Phase Elements
+const phoneInputPhase = document.getElementById('phone-input-phase');
+const phoneOtpPhase = document.getElementById('phone-otp-phase');
+const phoneInput = document.getElementById('phone-number');
+const phoneSendBtn = document.getElementById('phone-send-btn');
+const otpInput = document.getElementById('phone-otp');
+const phoneVerifyBtn = document.getElementById('phone-verify-btn');
+const phoneBackBtn = document.getElementById('phone-back-btn');
+const sentPhoneDisplay = document.getElementById('sent-phone-display');
 
 // --- DETECT ACTIVE PAGE ---
 const isLoginPage = !!loginForm;
@@ -39,6 +62,15 @@ if (isLoginPage) {
   // Hide error container on start
   if (errorContainer) errorContainer.style.display = 'none';
 
+  // Initialize invisible reCAPTCHA Verifier
+  try {
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      'size': 'invisible'
+    });
+  } catch (err) {
+    console.error('reCAPTCHA initialization failed:', err);
+  }
+
   // Toggle Tab switches
   tabLogin.addEventListener('click', () => {
     tabLogin.className = 'btn-primary';
@@ -47,6 +79,7 @@ if (isLoginPage) {
     tabRegister.style.background = 'none';
     loginForm.style.display = 'block';
     registerForm.style.display = 'none';
+    phoneForm.style.display = 'none';
     if (errorContainer) errorContainer.style.display = 'none';
   });
 
@@ -57,10 +90,165 @@ if (isLoginPage) {
     tabLogin.style.background = 'none';
     loginForm.style.display = 'none';
     registerForm.style.display = 'block';
+    phoneForm.style.display = 'none';
     if (errorContainer) errorContainer.style.display = 'none';
   });
 
-  // Login handler
+  // Switch between Email and Phone Sign In
+  toPhoneBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'none';
+    authTabs.style.display = 'none';
+    phoneForm.style.display = 'block';
+    phoneInputPhase.style.display = 'block';
+    phoneOtpPhase.style.display = 'none';
+    if (errorContainer) errorContainer.style.display = 'none';
+  });
+
+  toEmailBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    phoneForm.style.display = 'none';
+    authTabs.style.display = 'flex';
+    loginForm.style.display = 'block';
+    tabLogin.click(); // Trigger login tab active
+  });
+
+  // --- GOOGLE AUTHENTICATION FLOW ---
+  googleBtn.addEventListener('click', async () => {
+    if (errorContainer) errorContainer.style.display = 'none';
+    const originalText = googleBtn.querySelector('span').textContent;
+    googleBtn.querySelector('span').textContent = 'Connecting Google...';
+    googleBtn.disabled = true;
+
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Check if profile exists, if not, write profile document
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        await setDoc(docRef, {
+          name: user.displayName || 'Google Account',
+          email: user.email,
+          phone: user.phoneNumber || '—',
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      window.location.href = 'customer.html';
+
+    } catch (err) {
+      console.error(err);
+      if (errorText) {
+        errorText.textContent = getFriendlyErrorMessage(err.code);
+        errorContainer.style.display = 'flex';
+      }
+      googleBtn.querySelector('span').textContent = originalText;
+      googleBtn.disabled = false;
+    }
+  });
+
+  // --- PHONE AUTHENTICATION FLOW ---
+  phoneSendBtn.addEventListener('click', async () => {
+    if (errorContainer) errorContainer.style.display = 'none';
+    
+    const phoneNumberValue = phoneInput.value.trim();
+    if (!phoneNumberValue || !phoneNumberValue.startsWith('+')) {
+      phoneInput.setAttribute('aria-invalid', 'true');
+      if (errorText) {
+        errorText.textContent = 'Country code is required (e.g. +91 or +1).';
+        errorContainer.style.display = 'flex';
+      }
+      return;
+    }
+    phoneInput.removeAttribute('aria-invalid');
+
+    phoneSendBtn.disabled = true;
+    phoneSendBtn.textContent = 'Sending SMS...';
+
+    try {
+      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumberValue, window.recaptchaVerifier);
+      window.confirmationResult = confirmationResult;
+
+      sentPhoneDisplay.textContent = phoneNumberValue;
+      phoneInputPhase.style.display = 'none';
+      socialLoginSection.style.display = 'none';
+      phoneOtpPhase.style.display = 'block';
+
+    } catch (err) {
+      console.error(err);
+      // Reset reCAPTCHA container if fails so they can retry
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.render().then(widgetId => {
+          grecaptcha.reset(widgetId);
+        });
+      }
+      if (errorText) {
+        errorText.textContent = getFriendlyErrorMessage(err.code);
+        errorContainer.style.display = 'flex';
+      }
+    } finally {
+      phoneSendBtn.disabled = false;
+      phoneSendBtn.textContent = 'Send Verification Code';
+    }
+  });
+
+  phoneVerifyBtn.addEventListener('click', async () => {
+    if (errorContainer) errorContainer.style.display = 'none';
+
+    const code = otpInput.value.trim();
+    if (!code || code.length !== 6) {
+      otpInput.setAttribute('aria-invalid', 'true');
+      return;
+    }
+    otpInput.removeAttribute('aria-invalid');
+
+    phoneVerifyBtn.disabled = true;
+    phoneVerifyBtn.textContent = 'Verifying...';
+
+    try {
+      const result = await window.confirmationResult.confirm(code);
+      const user = result.user;
+
+      // Check if profile exists, if not, write profile document
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        await setDoc(docRef, {
+          name: 'Verified Mobile Customer',
+          email: user.email || '—',
+          phone: user.phoneNumber,
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      window.location.href = 'customer.html';
+
+    } catch (err) {
+      console.error(err);
+      if (errorText) {
+        errorText.textContent = getFriendlyErrorMessage(err.code);
+        errorContainer.style.display = 'flex';
+      }
+      phoneVerifyBtn.disabled = false;
+      phoneVerifyBtn.textContent = 'Verify Code';
+    }
+  });
+
+  phoneBackBtn.addEventListener('click', () => {
+    phoneOtpPhase.style.display = 'none';
+    phoneInputPhase.style.display = 'block';
+    socialLoginSection.style.display = 'block';
+    otpInput.value = '';
+    if (errorContainer) errorContainer.style.display = 'none';
+  });
+
+  // --- EMAIL/PASSWORD SIGN IN FLOW ---
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (errorContainer) errorContainer.style.display = 'none';
@@ -103,7 +291,7 @@ if (isLoginPage) {
     }
   });
 
-  // Register handler
+  // --- EMAIL/PASSWORD REGISTRATION FLOW ---
   registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (errorContainer) errorContainer.style.display = 'none';
@@ -117,7 +305,6 @@ if (isLoginPage) {
 
     let isValid = true;
 
-    // Validation checks
     if (!nameInput.value.trim() || nameInput.value.trim().length < 2) {
       nameInput.setAttribute('aria-invalid', 'true');
       isValid = false;
@@ -166,7 +353,6 @@ if (isLoginPage) {
       const userCredential = await createUserWithEmailAndPassword(auth, email, passwordInput.value);
       const user = userCredential.user;
 
-      // Save user profile to Firestore
       await setDoc(doc(db, "users", user.uid), {
         name,
         email,
@@ -207,7 +393,6 @@ if (isDashboardPage) {
   // Verify auth session
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      // Not logged in, redirect to portal login
       window.location.href = 'customer-login.html';
       return;
     }
@@ -217,33 +402,50 @@ if (isDashboardPage) {
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
       
-      let name = user.email.split('@')[0];
-      let phone = '—';
+      let name = user.email ? user.email.split('@')[0] : 'Valued Customer';
+      let phone = user.phoneNumber || '—';
+      let email = user.email || '—';
       
       if (userDocSnap.exists()) {
         const profile = userDocSnap.data();
         name = profile.name;
         phone = profile.phone;
+        email = profile.email;
       }
       
       // Populate Profile Sidebar & Greeting
       custName.textContent = name;
       custWelcomeHeader.textContent = `Hello, ${name.split(' ')[0]}`;
       profName.textContent = name;
-      profEmail.textContent = user.email;
+      profEmail.textContent = email;
       profPhone.textContent = phone;
 
-      // 2. Fetch Customer Orders (where email matching)
+      // 2. Fetch Customer Orders: Query by email or phone depending on auth method
       const ordersCol = collection(db, "orders");
-      const q = query(ordersCol, where("email", "==", user.email));
+      
+      let q;
+      if (user.email) {
+        q = query(ordersCol, where("email", "==", user.email));
+      } else {
+        // Remove formatting for phone comparison
+        const cleanPhone = user.phoneNumber.replace(/[^0-9]/g, '');
+        q = query(ordersCol); // Query all and filter locally for robust phone match
+      }
+      
       const querySnap = await getDocs(q);
       
-      const orders = [];
+      let orders = [];
       querySnap.forEach(doc => {
         orders.push(doc.data());
       });
 
-      // Sort: Scheduled first, then active, then completed (matching admin layout)
+      // Filter phone users locally (Firestore where limitations)
+      if (!user.email) {
+        const cleanPhone = user.phoneNumber.replace(/[^0-9]/g, '');
+        orders = orders.filter(o => o.phone.replace(/[^0-9]/g, '').includes(cleanPhone));
+      }
+
+      // Sort: Scheduled first, then active, then completed
       const statusPriority = {
         'Scheduled': 1,
         'Picked Up': 2,
@@ -344,9 +546,17 @@ function getFriendlyErrorMessage(code) {
     case 'auth/weak-password':
       return 'Password is too weak. Must be at least 6 characters.';
     case 'auth/operation-not-allowed':
-      return 'Email/Password logins are not enabled. Contact support.';
+      return 'Social/Phone provider logins are not enabled. Enable them in your Firebase Console.';
     case 'auth/network-request-failed':
       return 'Server timeout. Check your internet connection.';
+    case 'auth/captcha-check-failed':
+      return 'reCAPTCHA verification failed. Please try again.';
+    case 'auth/invalid-phone-number':
+      return 'The phone number format is invalid. Make sure to include the country code (e.g. +91 or +1).';
+    case 'auth/missing-phone-number':
+      return 'Please enter a mobile phone number.';
+    case 'auth/quota-exceeded':
+      return 'SMS quota exceeded for today. Please try again later or log in via email.';
     default:
       return 'Account verification failed. Please try again.';
   }
