@@ -15,25 +15,11 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ── EMAILJS CONFIGURATION (FOR STATUS UPDATES) ──────────────────────────────
-const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY"; 
-const EMAILJS_SERVICE_ID = "YOUR_EMAILJS_SERVICE_ID"; 
-const EMAILJS_TEMPLATE_STATUS_UPDATE = "YOUR_EMAILJS_TEMPLATE_STATUS_UPDATE"; 
-
 const ADMIN_EMAILS = [
   'naveensethi2007@yahoo.com',
   'admin@mercurycleaners.in'
 ];
 
-// Load EmailJS SDK dynamically
-if (EMAILJS_PUBLIC_KEY !== "YOUR_EMAILJS_PUBLIC_KEY") {
-  const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-  script.onload = () => {
-    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  };
-  document.head.appendChild(script);
-}
 
 document.addEventListener('DOMContentLoaded', () => {
   let allItems = []; // Combines pickups and orders
@@ -219,10 +205,22 @@ document.addEventListener('DOMContentLoaded', () => {
       if (idx !== -1) {
         allItems[idx].status = newStatus;
         
-        // Trigger customer email notification via EmailJS if email is available and configured
+        // Trigger customer email notification via Nodemailer backend
         const item = allItems[idx];
-        if (item.email && EMAILJS_PUBLIC_KEY !== "YOUR_EMAILJS_PUBLIC_KEY") {
-          sendCustomerNotification(item.email, item.customerName, item.orderId, newStatus);
+        if (item.email) {
+          fetch('/api/email/status-update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              customerName: item.customerName,
+              email: item.email,
+              orderId: item.orderId,
+              newStatus: newStatus
+            })
+          })
+          .then(r => r.json())
+          .then(d => console.log('Status update email sent:', d.message))
+          .catch(err => console.error('Status email failed:', err));
         }
       }
 
@@ -236,33 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Send status update notification via EmailJS
-  function sendCustomerNotification(email, name, orderId, status) {
-    if (!window.emailjs) return;
-    
-    // Status visual label helper
-    let cleanStatus = status;
-    if (status === 'ready') cleanStatus = 'Ready for Delivery 🚚';
-    else if (status === 'in cleaning') cleanStatus = 'In Cleaning 🧼';
-    else if (status === 'picked up') cleanStatus = 'Picked Up 👕';
-    else if (status === 'completed') cleanStatus = 'Delivered & Completed ✅';
-
-    const templateParams = {
-      to_email: email,
-      to_name: name,
-      order_id: orderId,
-      status: cleanStatus.toUpperCase(),
-      message: `Your dry cleaning order ${orderId} has been updated to: ${cleanStatus}.`
-    };
-
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_STATUS_UPDATE, templateParams)
-      .then(() => {
-        console.log(`Notification email sent to ${email} for order ${orderId} status: ${status}`);
-      })
-      .catch((err) => {
-        console.error('EmailJS status update send failed:', err);
-      });
-  }
 
   // Update Stats Counters
   function updateStats() {

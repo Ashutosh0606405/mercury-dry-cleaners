@@ -49,9 +49,10 @@ setInterval(() => {
 }, 60 * 60 * 1000); // Clean every hour
 
 // --- API ROUTES ---
+const apiRouter = express.Router();
 
 // 1. Submit a pickup request (Public)
-app.post('/api/orders/pickup', async (req, res) => {
+apiRouter.post('/orders/pickup', async (req, res) => {
   try {
     const {
       customerName,
@@ -92,7 +93,7 @@ app.post('/api/orders/pickup', async (req, res) => {
 });
 
 // 1b. Send pickup booking confirmation email (Public)
-app.post('/api/email/pickup-confirmation', async (req, res) => {
+apiRouter.post('/email/pickup-confirmation', async (req, res) => {
   try {
     const { customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions } = req.body;
     if (!email || !orderId) {
@@ -107,7 +108,7 @@ app.post('/api/email/pickup-confirmation', async (req, res) => {
 });
 
 // 1c. Send order confirmation email (Public)
-app.post('/api/email/order-confirmation', async (req, res) => {
+apiRouter.post('/email/order-confirmation', async (req, res) => {
   try {
     const { customerName, email, orderId, items, totalAmount, address, notes } = req.body;
     if (!email || !orderId) {
@@ -121,8 +122,23 @@ app.post('/api/email/order-confirmation', async (req, res) => {
   }
 });
 
+// 1d. Send status update email (Public/Admin)
+apiRouter.post('/email/status-update', async (req, res) => {
+  try {
+    const { customerName, email, orderId, newStatus } = req.body;
+    if (!email || !orderId || !newStatus) {
+      return res.status(400).json({ error: 'Missing required fields: email, orderId, and newStatus.' });
+    }
+    await sendStatusUpdate({ customerName, email, orderId, newStatus });
+    res.json({ success: true, message: 'Status update email sent.' });
+  } catch (err) {
+    console.error('Status update email error:', err);
+    res.status(500).json({ error: 'Failed to send status update email.' });
+  }
+});
+
 // 2. Track an order by ID or phone number (Public)
-app.get('/api/orders/track', async (req, res) => {
+apiRouter.get('/orders/track', async (req, res) => {
   try {
     const query = req.query.q;
     if (!query) {
@@ -142,7 +158,7 @@ app.get('/api/orders/track', async (req, res) => {
 });
 
 // 3. Admin Login (Authenticates via Firebase Authentication)
-app.post('/api/auth/login', async (req, res) => {
+apiRouter.post('/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -197,7 +213,7 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // 4. Admin Logout
-app.post('/api/auth/logout', (req, res) => {
+apiRouter.post('/auth/logout', (req, res) => {
   const token = req.cookies.session_token;
   if (token) {
     SESSIONS.delete(token);
@@ -207,7 +223,7 @@ app.post('/api/auth/logout', (req, res) => {
 });
 
 // 5. Check Session Status
-app.get('/api/auth/status', (req, res) => {
+apiRouter.get('/auth/status', (req, res) => {
   const token = req.cookies.session_token;
   if (token && SESSIONS.has(token)) {
     const session = SESSIONS.get(token);
@@ -219,7 +235,7 @@ app.get('/api/auth/status', (req, res) => {
 });
 
 // 6. Get All Orders (Admin Protected)
-app.get('/api/admin/orders', requireAuth, async (req, res) => {
+apiRouter.get('/admin/orders', requireAuth, async (req, res) => {
   try {
     const orders = await db.getOrders();
     
@@ -249,7 +265,7 @@ app.get('/api/admin/orders', requireAuth, async (req, res) => {
 });
 
 // 7. Update Order Status (Admin Protected)
-app.patch('/api/admin/orders/:id', requireAuth, async (req, res) => {
+apiRouter.patch('/admin/orders/:id', requireAuth, async (req, res) => {
   try {
     const orderId = req.params.id;
     const { status } = req.body;
@@ -284,6 +300,11 @@ app.patch('/api/admin/orders/:id', requireAuth, async (req, res) => {
     res.status(500).json({ error: 'Failed to update order status.' });
   }
 });
+
+// Mount the router under both prefix-less and /api prefixes
+app.use('/api', apiRouter);
+app.use('/', apiRouter);
+
 
 // Start Server
 // Only start the server listening if not imported as a Vercel serverless function
