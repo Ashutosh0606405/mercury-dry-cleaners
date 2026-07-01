@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Place Order – Mercury Dry Cleaners</title>
+  <meta name="description" content="Place a dry cleaning or laundry order with Mercury Cleaners. Choose your garments, see the price instantly, and confirm your pickup.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    /* ── Order Page Specific ── */
+    .order-hero {
+      background: linear-gradient(135deg, #fff7ed 0%, #dbeafe 100%);
+      padding: 7rem 2rem 3rem;
+      text-align: center;
+    }
+    .order-hero h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+    .order-hero p { color: var(--text-muted); font-size: 1.05rem; }
+
+    .order-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 6rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) {
+      .order-wrapper { grid-template-columns: 1fr; }
+    }
+
+    /* ── Pricing Card ── */
+    .price-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    .price-card-header {
+      background: var(--primary);
+      padding: 1.25rem 1.5rem;
+      color: white;
+    }
+    .price-card-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .price-card-header p { font-size: 0.85rem; opacity: 0.85; margin-top: 0.2rem; }
+
+    .price-table { width: 100%; border-collapse: collapse; }
+    .price-table thead tr { background: var(--bg-alt); }
+    .price-table th {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .price-table th:last-child { text-align: center; }
+    .price-table td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+    .price-table tr:last-child td { border-bottom: none; }
+    .price-table tr:hover { background: var(--primary-light); transition: var(--transition); }
+
+    .garment-name { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; color: var(--text-dark); }
+    .garment-icon { font-size: 1.2rem; }
+    .garment-price { color: var(--primary); font-weight: 700; }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .qty-btn {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+      line-height: 1;
+    }
+    .qty-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .qty-value { font-weight: 700; min-width: 20px; text-align: center; font-size: 0.95rem; }
+
+    /* ── Order Summary ── */
+    .order-summary {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 1.5rem;
+      position: sticky;
+      top: 90px;
+    }
+    .order-summary h2 {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      color: var(--text-dark);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .summary-items { margin-bottom: 1rem; min-height: 60px; }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0;
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      border-bottom: 1px dashed var(--border);
+    }
+    .summary-item:last-child { border-bottom: none; }
+    .summary-empty { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 1rem 0; }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      padding: 0.75rem 0;
+      border-top: 2px solid var(--border);
+      margin-top: 0.75rem;
+    }
+    .total-amount { color: var(--primary); }
+
+    /* ── Customer Form ── */
+    .customer-form { margin-top: 1.5rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      background: var(--bg-body);
+      transition: var(--transition);
+      outline: none;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--primary);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+    }
+    .form-group textarea { resize: vertical; min-height: 70px; }
+
+    .btn-order {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-orange);
+      margin-top: 0.5rem;
+    }
+    .btn-order:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.4); }
+    .btn-order:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── Success Dialog ── */
+    .success-dialog {
+      border: none;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      max-width: 420px;
+      width: 90%;
+      padding: 0;
+      overflow: hidden;
+    }
+    .success-dialog::backdrop { background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); }
+    .dialog-inner { padding: 2.5rem 2rem; text-align: center; }
+    .dialog-icon {
+      width: 64px; height: 64px;
+      background: var(--green-light);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 1.25rem;
+    }
+    .dialog-inner h3 { font-family: var(--font-heading); font-size: 1.5rem; color: var(--text-dark); margin-bottom: 0.5rem; }
+    .dialog-inner p { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.3rem; }
+    .order-id-badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 1rem;
+      margin: 0.75rem 0 1.25rem;
+      letter-spacing: 0.05em;
+    }
+    .btn-close-dialog {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.7rem 2rem;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-close-dialog:hover { background: var(--primary-hover); }
+
+    .notice-bar {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.9rem;
+      font-size: 0.83rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 0.4rem;
+      align-items: flex-start;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <header id="main-header">
+    <div class="navbar">
+      <div class="nav-left">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="16" fill="#f97316"/>
+              <text x="16" y="21" text-anchor="middle" fill="white" font-size="14" font-weight="800" font-family="Outfit">M</text>
+            </svg>
+          </div>
+          <div class="logo-text">Mercury<span>Cleaners</span></div>
+        </a>
+      </div>
+      <nav class="nav-center">
+        <ul class="nav-links">
+          <li><a href="index.html#services">Services</a></li>
+          <li><a href="index.html#how-it-works">How It Works</a></li>
+          <li><a href="order.html" class="active">Pricing & Order</a></li>
+          <li><a href="track.html">Track Order</a></li>
+          <li><a href="#" id="auth-nav-btn">Sign In</a></li>
+        </ul>
+      </nav>
+      <div class="nav-right">
+        <a href="tel:+918010366665" class="btn-phone">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.22a2 2 0 012-2.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11l-1.27 1.27a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          +91 80103 66665
+        </a>
+        <a href="index.html#schedule" class="btn-cta">Book Pickup →</a>
+      </div>
+      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="order-hero">
+    <h1>Price List & Place Order 🧺</h1>
+    <p>Choose your garments, see the total instantly, and we'll pick them up at your door.</p>
+  </section>
+
+  <!-- ===== MAIN ===== -->
+  <div class="order-wrapper">
+
+    <!-- LEFT: Price Table -->
+    <div class="price-card reveal">
+      <div class="price-card-header">
+        <h2>Service Price List</h2>
+        <p>Adjust quantities — total updates live</p>
+      </div>
+      <table class="price-table" id="priceTable">
+        <thead>
+          <tr>
+            <th>Garment</th>
+            <th>Price/pc</th>
+            <th>Qty</th>
+          </tr>
+        </thead>
+        <tbody id="priceBody">
+          <!-- Rows injected by order.js -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RIGHT: Order Summary + Form -->
+    <div class="order-summary reveal delay-1">
+      <h2>🧾 Your Order</h2>
+
+      <div class="summary-items" id="summaryItems">
+        <p class="summary-empty">Add garments from the table →</p>
+      </div>
+
+      <div class="summary-total">
+        <span>Total</span>
+        <span class="total-amount" id="totalAmount">₹0</span>
+      </div>
+
+      <!-- Customer details -->
+      <form class="customer-form" id="orderForm" novalidate>
+        <div class="notice-bar">
+          ℹ️ We'll confirm your order within 30 minutes and arrange pickup.
+        </div>
+        <div class="form-group">
+          <label for="custName">Full Name</label>
+          <input type="text" id="custName" name="name" placeholder="Rahul Sharma" required>
+        </div>
+        <div class="form-group">
+          <label for="custPhone">Phone Number</label>
+          <input type="tel" id="custPhone" name="phone" placeholder="98xxxxxxxx" required pattern="[0-9]{10}">
+        </div>
+        <div class="form-group">
+          <label for="custEmail">Email Address</label>
+          <input type="email" id="custEmail" name="email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="custAddress">Pickup Address</label>
+          <textarea id="custAddress" name="address" placeholder="Flat no, street, area, Delhi…" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="custNotes">Special Instructions (optional)</label>
+          <textarea id="custNotes" name="notes" placeholder="E.g. Handle the saree carefully…"></textarea>
+        </div>
+        <button type="submit" class="btn-order" id="orderSubmitBtn">
+          ✅ Confirm Order
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== SUCCESS DIALOG ===== -->
+  <dialog class="success-dialog" id="orderSuccessDialog">
+    <div class="dialog-inner">
+      <div class="dialog-icon">✅</div>
+      <h3>Order Placed!</h3>
+      <p>Your order has been received. We'll confirm shortly.</p>
+      <div class="order-id-badge" id="dialogOrderId">MDC-XXXXXXXX</div>
+      <p style="font-size:0.85rem; color:var(--text-muted);">Total: <strong id="dialogTotal">₹0</strong></p>
+      <br>
+      <button class="btn-close-dialog" id="closeOrderDialog">Done</button>
+    </div>
+  </dialog>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script type="module" src="js/order.js"></script>
+
+  <!-- Hamburger toggle (mirrors main site) -->
+  <script>
+    const ham = document.getElementById('hamburger');
+    const header = document.getElementById('main-header');
+    if (ham) ham.addEventListener('click', () => header.classList.toggle('nav-open'));
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 30);
+    });
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
