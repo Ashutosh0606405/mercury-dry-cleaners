@@ -62,14 +62,6 @@ if (isLoginPage) {
   // Hide error container on start
   if (errorContainer) errorContainer.style.display = 'none';
 
-  // Initialize invisible reCAPTCHA Verifier
-  try {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      'size': 'invisible'
-    });
-  } catch (err) {
-    console.error('reCAPTCHA initialization failed:', err);
-  }
 
   // Toggle Tab switches
   tabLogin.addEventListener('click', () => {
@@ -177,6 +169,27 @@ if (isLoginPage) {
     phoneSendBtn.textContent = 'Sending SMS...';
 
     try {
+      // Destroy old verifier if it exists to avoid duplicate reCAPTCHA errors
+      if (window.recaptchaVerifier) {
+        try { window.recaptchaVerifier.clear(); } catch(e) {}
+        window.recaptchaVerifier = null;
+      }
+
+      // Create a fresh reCAPTCHA verifier each time
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+        'callback': () => {},
+        'expired-callback': () => {
+          if (errorText) {
+            errorText.textContent = 'reCAPTCHA expired. Please try again.';
+            errorContainer.style.display = 'flex';
+          }
+        }
+      });
+
+      // Render it explicitly before use
+      await window.recaptchaVerifier.render();
+
       const confirmationResult = await signInWithPhoneNumber(auth, phoneNumberValue, window.recaptchaVerifier);
       window.confirmationResult = confirmationResult;
 
@@ -187,11 +200,10 @@ if (isLoginPage) {
 
     } catch (err) {
       console.error(err);
-      // Reset reCAPTCHA container if fails so they can retry
+      // Clear broken verifier so next attempt starts fresh
       if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.render().then(widgetId => {
-          grecaptcha.reset(widgetId);
-        });
+        try { window.recaptchaVerifier.clear(); } catch(e) {}
+        window.recaptchaVerifier = null;
       }
       if (errorText) {
         errorText.textContent = `Error [${err.code}]: ${getFriendlyErrorMessage(err.code)}`;
