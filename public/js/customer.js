@@ -194,7 +194,7 @@ if (isLoginPage) {
         });
       }
       if (errorText) {
-        errorText.textContent = getFriendlyErrorMessage(err.code);
+        errorText.textContent = `Error [${err.code}]: ${getFriendlyErrorMessage(err.code)}`;
         errorContainer.style.display = 'flex';
       }
     } finally {
