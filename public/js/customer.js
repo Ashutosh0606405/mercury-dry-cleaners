@@ -445,50 +445,77 @@ if (isDashboardPage) {
       profPhone.textContent = phone;
 
       // 2. Fetch Customer Orders: Query by email or phone depending on auth method
+      // 2. Fetch Customer Orders: Query by email or phone across both collections
       const ordersCol = collection(db, "orders");
+      const pickupsCol = collection(db, "pickups");
       
-      let q;
+      let qOrders, qPickups;
       if (user.email) {
-        q = query(ordersCol, where("email", "==", user.email));
+        qOrders = query(ordersCol, where("email", "==", user.email));
+        qPickups = query(pickupsCol, where("email", "==", user.email));
       } else {
-        // Remove formatting for phone comparison
-        const cleanPhone = user.phoneNumber.replace(/[^0-9]/g, '');
-        q = query(ordersCol); // Query all and filter locally for robust phone match
+        qOrders = query(ordersCol);
+        qPickups = query(pickupsCol);
       }
       
-      const querySnap = await getDocs(q);
+      const [ordersSnap, pickupsSnap] = await Promise.all([
+        getDocs(qOrders),
+        getDocs(qPickups)
+      ]);
       
       let orders = [];
-      querySnap.forEach(doc => {
-        orders.push(doc.data());
+      ordersSnap.forEach(doc => {
+        const data = doc.data();
+        const idVal = data.orderId || data.id || doc.id;
+        orders.push({
+          id: idVal,
+          orderId: idVal,
+          collectionType: 'orders',
+          ...data
+        });
+      });
+      pickupsSnap.forEach(doc => {
+        const data = doc.data();
+        const idVal = data.orderId || data.id || doc.id;
+        orders.push({
+          id: idVal,
+          orderId: idVal,
+          collectionType: 'pickups',
+          ...data
+        });
       });
 
       // Filter phone users locally (Firestore where limitations)
       if (!user.email) {
         const cleanPhone = user.phoneNumber.replace(/[^0-9]/g, '');
-        orders = orders.filter(o => o.phone.replace(/[^0-9]/g, '').includes(cleanPhone));
+        orders = orders.filter(o => (o.phone || '').replace(/[^0-9]/g, '').includes(cleanPhone));
       }
 
-      // Sort: Scheduled first, then active, then completed
+      // Sort: Scheduled first, then active, then completed (case-insensitive)
       const statusPriority = {
-        'Scheduled': 1,
-        'Picked Up': 2,
-        'In Cleaning': 3,
-        'Ready': 4,
-        'Completed': 5
+        'pending': 1,
+        'scheduled': 1,
+        'picked up': 2,
+        'in cleaning': 3,
+        'ready': 4,
+        'completed': 5
       };
       
       orders.sort((a, b) => {
-        const priorityA = statusPriority[a.status] || 99;
-        const priorityB = statusPriority[b.status] || 99;
+        const priorityA = statusPriority[(a.status || '').toLowerCase()] || 99;
+        const priorityB = statusPriority[(b.status || '').toLowerCase()] || 99;
         if (priorityA !== priorityB) return priorityA - priorityB;
-        return new Date(b.updatedAt) - new Date(a.updatedAt);
+        
+        // Handle timestamps/dates robustly
+        const dateA = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(a.createdAt || 0);
+        const dateB = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(b.createdAt || 0);
+        return dateB - dateA;
       });
 
       // Update statistics
       statTotal.textContent = orders.length;
-      statActive.textContent = orders.filter(o => o.status !== 'Completed').length;
-      statReady.textContent = orders.filter(o => o.status === 'Ready').length;
+      statActive.textContent = orders.filter(o => (o.status || '').toLowerCase() !== 'completed').length;
+      statReady.textContent = orders.filter(o => (o.status || '').toLowerCase() === 'ready').length;
 
       // Render table
       if (orders.length === 0) {
@@ -500,12 +527,30 @@ if (isDashboardPage) {
         
         tbody.innerHTML = orders.map(order => {
           let badgeClass = '';
-          switch (order.status) {
-            case 'Scheduled': badgeClass = 'badge-scheduled'; break;
-            case 'Picked Up': badgeClass = 'badge-pickedup'; break;
-            case 'In Cleaning': badgeClass = 'badge-cleaning'; break;
-            case 'Ready': badgeClass = 'badge-ready'; break;
-            case 'Completed': badgeClass = 'badge-completed'; break;
+          let badgeLabel = order.status || 'Pending';
+          
+          switch ((order.status || '').toLowerCase()) {
+            case 'pending':
+            case 'scheduled': 
+              badgeClass = 'badge-scheduled'; 
+              badgeLabel = 'Scheduled';
+              break;
+            case 'picked up': 
+              badgeClass = 'badge-pickedup'; 
+              badgeLabel = 'Picked Up';
+              break;
+            case 'in cleaning': 
+              badgeClass = 'badge-cleaning'; 
+              badgeLabel = 'In Cleaning';
+              break;
+            case 'ready': 
+              badgeClass = 'badge-ready'; 
+              badgeLabel = 'Ready';
+              break;
+            case 'completed': 
+              badgeClass = 'badge-completed'; 
+              badgeLabel = 'Completed';
+              break;
           }
 
           return `
@@ -524,7 +569,7 @@ if (isDashboardPage) {
                 <span style="font-size:0.85rem; font-weight:500;">${order.garmentTypes.join(', ')}</span>
               </td>
               <td>
-                <span class="badge ${badgeClass}">${order.status}</span>
+                <span class="badge ${badgeClass}">${badgeLabel}</span>
               </td>
               <td>
                 <a href="track.html?id=${order.id}" class="btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.8rem; border-radius:6px; display:inline-flex; align-items:center;">

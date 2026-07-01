@@ -100,40 +100,71 @@ async function seedDatabase() {
   }
 }
 
-// Read all orders
+// Read all orders & pickups across both collections
 async function getOrders() {
-  const snap = await getDocs(collection(db, 'orders'));
   const orders = [];
-  snap.forEach(doc => {
-    orders.push(doc.data());
-  });
+  
+  // 1. Fetch from 'orders' collection
+  try {
+    const snap = await getDocs(collection(db, 'orders'));
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      const idVal = data.orderId || data.id || docSnap.id;
+      orders.push({
+        docId: docSnap.id,
+        collectionType: 'orders',
+        id: idVal,
+        orderId: idVal,
+        ...data
+      });
+    });
+  } catch (err) {
+    console.error('Error fetching orders collection:', err);
+  }
+
+  // 2. Fetch from 'pickups' collection
+  try {
+    const snap = await getDocs(collection(db, 'pickups'));
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      const idVal = data.orderId || data.id || docSnap.id;
+      orders.push({
+        docId: docSnap.id,
+        collectionType: 'pickups',
+        id: idVal,
+        orderId: idVal,
+        ...data
+      });
+    });
+  } catch (err) {
+    console.error('Error fetching pickups collection:', err);
+  }
+
   return orders;
 }
 
-// Find order by ID or Phone (partial phone lookup fallback)
+// Find order by ID or Phone (across both orders and pickups)
 async function findOrder(queryText) {
+  if (!queryText) return null;
   const normalizedQuery = queryText.trim().toUpperCase();
   
-  // 1. Direct document ID lookup (Fastest)
-  if (normalizedQuery.startsWith('MERC-')) {
-    const docRef = doc(db, 'orders', normalizedQuery);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      return docSnap.data();
-    }
-  }
-
-  // 2. Fetch all and search locally for phone numbers (or partial matches)
+  // Fetch all orders/pickups from both collections
   const allOrders = await getOrders();
   
-  // Try exact ID match if they entered number without MERC- prefix
-  let match = allOrders.find(o => o.id.replace(/[^0-9]/g, '') === normalizedQuery.replace(/[^0-9]/g, ''));
+  // 1. Exact ID match (case-insensitive and format-agnostic)
+  let match = allOrders.find(o => {
+    const idVal = (o.orderId || o.id || '').toUpperCase();
+    return idVal === normalizedQuery || idVal.replace(/[^A-Z0-9]/g, '') === normalizedQuery.replace(/[^A-Z0-9]/g, '');
+  });
   if (match) return match;
 
-  // Search by normalized phone sequence
+  // 2. Search by phone number (strip formatting)
   const stripPhone = normalizedQuery.replace(/[^0-9]/g, '');
   if (stripPhone.length > 2) {
-    match = allOrders.find(o => o.phone.replace(/[^0-9]/g, '').includes(stripPhone));
+    match = allOrders.find(o => {
+      const phoneVal = (o.phone || '').replace(/[^0-9]/g, '');
+      return phoneVal.includes(stripPhone);
+    });
   }
 
   return match || null;
@@ -172,21 +203,25 @@ async function createOrder(orderData) {
   return newOrder;
 }
 
-// Update order status
+// Update order status across both collections
 async function updateOrderStatus(id, status) {
-  const docRef = doc(db, 'orders', id.toUpperCase());
-  const docSnap = await getDoc(docRef);
+  const normalizedId = id.trim().toUpperCase();
+  const allOrders = await getOrders();
+  const found = allOrders.find(o => (o.orderId || o.id || '').toUpperCase() === normalizedId);
   
-  if (!docSnap.exists()) return null;
+  if (!found) return null;
 
+  const docRef = doc(db, found.collectionType, found.docId);
   const updatedData = {
-    ...docSnap.data(),
     status: status,
     updatedAt: new Date().toISOString()
   };
 
-  await setDoc(docRef, updatedData);
-  return updatedData;
+  await updateDoc(docRef, updatedData);
+  
+  // Return the merged updated object
+  const { docId, collectionType, ...originalData } = found;
+  return { ...originalData, ...updatedData };
 }
 
 module.exports = {

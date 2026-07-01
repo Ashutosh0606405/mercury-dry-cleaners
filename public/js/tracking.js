@@ -88,20 +88,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Status badge
     let badgeHTML = '';
-    switch (order.status) {
-      case 'Scheduled':
+    const statusNormalized = (order.status || '').toLowerCase();
+    switch (statusNormalized) {
+      case 'pending':
+      case 'scheduled':
         badgeHTML = '<span class="badge badge-scheduled">Scheduled</span>';
         break;
-      case 'Picked Up':
+      case 'picked up':
         badgeHTML = '<span class="badge badge-pickedup">Picked Up</span>';
         break;
-      case 'In Cleaning':
+      case 'in cleaning':
         badgeHTML = '<span class="badge badge-cleaning">In Cleaning</span>';
         break;
-      case 'Ready':
+      case 'ready':
         badgeHTML = '<span class="badge badge-ready">Garments Ready</span>';
         break;
-      case 'Completed':
+      case 'completed':
         badgeHTML = '<span class="badge badge-completed">Completed</span>';
         break;
     }
@@ -124,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Ready notification highlight
-    if (order.status === 'Ready') {
+    if (statusNormalized === 'ready') {
       readyHighlight.style.display = 'flex';
     } else {
       readyHighlight.style.display = 'none';
@@ -138,31 +140,33 @@ document.addEventListener('DOMContentLoaded', () => {
       step.classList.remove('completed', 'active');
     });
 
-    // Map status to progress bar width and active steps
-    switch (status) {
-      case 'Scheduled':
+    // Map status to progress bar width and active steps (case-insensitive)
+    const statusNormalized = (status || '').toLowerCase();
+    switch (statusNormalized) {
+      case 'pending':
+      case 'scheduled':
         progressBar.style.width = '0%';
         stepScheduled.classList.add('active');
         break;
-      case 'Picked Up':
+      case 'picked up':
         progressBar.style.width = '25%';
         stepScheduled.classList.add('completed');
         stepPickedUp.classList.add('active');
         break;
-      case 'In Cleaning':
+      case 'in cleaning':
         progressBar.style.width = '50%';
         stepScheduled.classList.add('completed');
         stepPickedUp.classList.add('completed');
         stepCleaning.classList.add('active');
         break;
-      case 'Ready':
+      case 'ready':
         progressBar.style.width = '75%';
         stepScheduled.classList.add('completed');
         stepPickedUp.classList.add('completed');
         stepCleaning.classList.add('completed');
         stepReady.classList.add('active');
         break;
-      case 'Completed':
+      case 'completed':
         progressBar.style.width = '100%';
         stepScheduled.classList.add('completed');
         stepPickedUp.classList.add('completed');
