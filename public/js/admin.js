@@ -5,9 +5,7 @@ import {
   collection,
   getDocs,
   doc,
-  updateDoc,
-  query,
-  orderBy
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -51,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:3rem; color:var(--text-muted);">Syncing with live database...</td></tr>`;
 
       // 1. Fetch Pickups
-      const pickupsSnap = await getDocs(query(collection(db, 'pickups'), orderBy('createdAt', 'desc')));
+      const pickupsSnap = await getDocs(collection(db, 'pickups'));
       const pickups = [];
       pickupsSnap.forEach(docSnap => {
         pickups.push({
@@ -62,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       // 2. Fetch Orders
-      const ordersSnap = await getDocs(query(collection(db, 'orders'), orderBy('createdAt', 'desc')));
+      const ordersSnap = await getDocs(collection(db, 'orders'));
       const orders = [];
       ordersSnap.forEach(docSnap => {
         orders.push({
@@ -72,10 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      // Combine and sort by createdAt
+      // Combine and sort by createdAt robustly (handles Firebase Timestamp & ISO strings)
       allItems = [...pickups, ...orders].sort((a, b) => {
-        const dateA = a.createdAt?.seconds || 0;
-        const dateB = b.createdAt?.seconds || 0;
+        const dateA = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(a.createdAt || 0);
+        const dateB = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(b.createdAt || 0);
         return dateB - dateA; // Newest first
       });
 
@@ -116,12 +114,14 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = filtered.map(item => {
       const instructions = item.notes || item.specialInstructions || '—';
       
-      // Compute Items Text
+      // Compute Items Text (safe against missing items list)
       let itemsText = '';
-      if (item.collectionType === 'orders') {
+      if (item.collectionType === 'orders' && Array.isArray(item.items)) {
         itemsText = item.items.map(i => `${i.name} (${i.qty})`).join(', ') + ` - ₹${item.totalAmount}`;
       } else {
-        itemsText = `${item.garmentCount}x [${item.garmentTypes.join(', ')}] (Pickup request)`;
+        const count = item.garmentCount || 0;
+        const types = Array.isArray(item.garmentTypes) ? item.garmentTypes.join(', ') : (item.garmentTypes || '—');
+        itemsText = `${count}x [${types}] (Pickup request)`;
       }
 
       // Schedule Info
