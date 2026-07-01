@@ -3,360 +3,288 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mercury Dry Cleaners | Premium Garment Care India</title>
-  <meta name="description" content="India's most trusted premium dry cleaning service. Eco-friendly solvents, doorstep pickup, real-time tracking. Book your pickup today.">
-  <link rel="stylesheet" href="css/main.css">
+  <title>Mercury Dry Cleaners | India's #1 Laundry & Dry Cleaning Service</title>
+  <meta name="description" content="India's most trusted premium dry cleaning & laundry service. Free doorstep pickup, real-time tracking, eco-friendly. Book your pickup today.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-
-  <!-- Animated Background Canvas -->
-  <canvas id="particle-canvas"></canvas>
-  <div class="mesh-gradient"></div>
 
   <!-- ===== NAVBAR ===== -->
   <header id="main-header">
     <div class="navbar">
-      <a href="index.html" class="logo">
-        <div class="logo-icon">
-          <span>M</span>
-          <div class="logo-ring"></div>
-        </div>
-        <div class="logo-text">Mercury <span>Dry Cleaners</span></div>
-      </a>
-      <nav>
+      <div class="nav-left">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="16" fill="#f97316"/>
+              <text x="16" y="21" text-anchor="middle" fill="white" font-size="14" font-weight="800" font-family="Outfit">M</text>
+            </svg>
+          </div>
+          <div class="logo-text">Mercury<span>Cleaners</span></div>
+        </a>
+      </div>
+
+      <nav class="nav-center">
         <ul class="nav-links">
-          <li><a href="index.html" class="active">Home</a></li>
-          <li><a href="#services">Services</a></li>
+          <li><a href="#services">Services <span class="arrow">▾</span></a></li>
           <li><a href="#how-it-works">How It Works</a></li>
-          <li><a href="#schedule">Book Pickup</a></li>
+          <li><a href="#schedule">Pricing</a></li>
           <li><a href="track.html">Track Order</a></li>
+          <li><a href="#" id="auth-nav-btn">Sign In</a></li>
         </ul>
       </nav>
-      <div class="nav-actions">
-        <a href="customer-login.html" id="auth-nav-btn" class="btn-ghost">Sign In</a>
-        <a href="#schedule" class="btn-primary nav-cta">Book Now</a>
+
+      <div class="nav-right">
+        <a href="tel:+918630841017" class="btn-phone">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.22a2 2 0 012-2.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11l-1.27 1.27a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          +91 86308 41017
+        </a>
+        <a href="#schedule" class="btn-cta">Book a Service →</a>
       </div>
-      <button class="hamburger" id="hamburger" aria-label="Menu">
+
+      <button class="hamburger" id="hamburger">
         <span></span><span></span><span></span>
       </button>
     </div>
-    <!-- Mobile Menu -->
+    <!-- Mobile menu -->
     <div class="mobile-menu" id="mobile-menu">
       <ul>
-        <li><a href="index.html">Home</a></li>
         <li><a href="#services">Services</a></li>
         <li><a href="#how-it-works">How It Works</a></li>
-        <li><a href="#schedule">Book Pickup</a></li>
+        <li><a href="#schedule">Pricing</a></li>
         <li><a href="track.html">Track Order</a></li>
         <li><a href="customer-login.html">Sign In</a></li>
+        <li><a href="#schedule" class="btn-cta">Book a Service</a></li>
       </ul>
     </div>
   </header>
 
   <!-- ===== HERO SECTION ===== -->
   <section class="hero">
-    <!-- Floating Garment Icons -->
-    <div class="floating-icons">
-      <div class="float-icon f1">👔</div>
-      <div class="float-icon f2">👗</div>
-      <div class="float-icon f3">🧥</div>
-      <div class="float-icon f4">👔</div>
-      <div class="float-icon f5">✨</div>
-      <div class="float-icon f6">💎</div>
-    </div>
+    <div class="hero-left">
+      <!-- Promo Badge -->
+      <div class="promo-badge">
+        <span class="promo-text">25% OFF FOR NEW USERS</span>
+        <span class="promo-code">USE25</span>
+      </div>
 
-    <div class="hero-content reveal">
-      <div class="hero-badge">
-        <span class="badge-dot"></span>
-        Trusted by 10,000+ customers across India
-      </div>
+      <!-- Headline -->
       <h1 class="hero-title">
-        Premium Garment Care<br>
-        <span class="gradient-text">Delivered to Your Door</span>
+        India's #1 Rated<br>
+        <span class="title-blue">Laundry &amp; Dry Cleaning</span><br>
+        Service
       </h1>
-      <p class="hero-desc">Experience luxury dry cleaning with eco-friendly solvents, expert pressers, and real-time tracking. Your finest clothes deserve the finest care.</p>
+
+      <!-- City Typing -->
+      <p class="hero-city">
+        Now Serving in <strong id="city-display" class="typed-city">Mumbai</strong><span class="cursor">|</span>
+      </p>
+
+      <!-- CTAs -->
       <div class="hero-actions">
-        <a href="#schedule" class="btn-primary btn-xl">
-          <span>🚀</span> Schedule Free Pickup
-        </a>
-        <a href="track.html" class="btn-outline btn-xl">
-          <span>📦</span> Track My Order
+        <a href="#schedule" class="btn-book">Book a Service →</a>
+        <a href="https://wa.me/918630841017" target="_blank" class="btn-whatsapp">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Chat on WhatsApp
         </a>
       </div>
-      <div class="hero-trust">
-        <div class="trust-item">
-          <strong>4.9 ⭐</strong>
-          <span>Rating</span>
+
+      <!-- Stats -->
+      <div class="hero-stats">
+        <div class="stat-box">
+          <strong class="count" data-target="25">0</strong>
+          <span>Cities</span>
         </div>
-        <div class="trust-divider"></div>
-        <div class="trust-item">
-          <strong>48hr</strong>
+        <div class="stat-divider"></div>
+        <div class="stat-box">
+          <strong class="count" data-target="48">0</strong><span class="suffix">hr</span>
           <span>Turnaround</span>
         </div>
-        <div class="trust-divider"></div>
-        <div class="trust-item">
-          <strong>Free</strong>
-          <span>Pickup & Drop</span>
+        <div class="stat-divider"></div>
+        <div class="stat-box">
+          <strong class="count" data-target="10">0</strong><span class="suffix">K+</span>
+          <span>Customers</span>
         </div>
-        <div class="trust-divider"></div>
-        <div class="trust-item">
-          <strong>Eco</strong>
-          <span>Friendly</span>
+        <div class="stat-divider"></div>
+        <div class="stat-box">
+          <strong class="count" data-target="4">0</strong><span class="suffix">.9★</span>
+          <span>Rating</span>
         </div>
       </div>
     </div>
 
-    <div class="hero-visual reveal delay-200">
-      <div class="hero-card-stack">
-        <!-- Live Order Card -->
-        <div class="hero-card hero-card-main glass-panel">
-          <div class="card-header">
-            <div class="card-icon">🔴</div>
-            <div>
-              <div class="card-title">Live Tracking</div>
-              <div class="card-sub">MERC-9847 · Priya Sharma</div>
-            </div>
-            <span class="badge badge-cleaning">In Cleaning</span>
-          </div>
-          <div class="track-progress">
-            <div class="track-steps">
-              <div class="track-step done">
-                <div class="step-dot"></div>
-                <span>Picked Up</span>
-              </div>
-              <div class="track-line done"></div>
-              <div class="track-step active">
-                <div class="step-dot"></div>
-                <span>Cleaning</span>
-              </div>
-              <div class="track-line"></div>
-              <div class="track-step">
-                <div class="step-dot"></div>
-                <span>Ready</span>
-              </div>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: 65%"></div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <span>🧥 Coat, 👔 Shirts (3), 👗 Dress</span>
-            <span class="card-eta">Ready in 6hrs</span>
-          </div>
-        </div>
-        <!-- Stats Card -->
-        <div class="hero-card hero-card-mini glass-panel">
-          <div class="mini-stat">
-            <span class="mini-icon">✅</span>
-            <div>
-              <strong>98.7%</strong>
-              <small>Stain Removal Rate</small>
-            </div>
-          </div>
-        </div>
-        <!-- Notification Card -->
-        <div class="hero-card hero-card-notif glass-panel">
-          <span>🎉</span>
-          <span>Garments ready for pickup!</span>
-        </div>
+    <!-- Hero Right - Image + Floating Tags -->
+    <div class="hero-right">
+      <div class="hero-circle">
+        <img src="images/hero-garments.jpg" alt="Dry Cleaning Garments" class="hero-img" loading="eager">
+      </div>
+
+      <!-- Floating Service Tags -->
+      <div class="service-tag tag-1">
+        <span class="tag-dot" style="background:#2563eb"></span> Dry Cleaning
+      </div>
+      <div class="service-tag tag-2">
+        <span class="tag-dot" style="background:#f97316"></span> Premium Laundry
+      </div>
+      <div class="service-tag tag-3">
+        <span class="tag-dot" style="background:#10b981"></span> Wash Only
+      </div>
+      <div class="service-tag tag-4">
+        <span class="tag-dot" style="background:#8b5cf6"></span> Woolen Dry Clean
+      </div>
+      <div class="service-tag tag-5">
+        <span class="tag-dot" style="background:#f59e0b"></span> Shoe Cleaning
+      </div>
+      <div class="service-tag tag-6">
+        <span class="tag-dot" style="background:#ec4899"></span> Saree Care
       </div>
     </div>
   </section>
 
-  <!-- ===== STATS COUNTER BAR ===== -->
-  <section class="stats-bar">
-    <div class="stats-container">
-      <div class="stat-item reveal">
-        <div class="stat-number" data-target="15000">0</div>
-        <div class="stat-label">Happy Customers</div>
-      </div>
-      <div class="stat-item reveal delay-100">
-        <div class="stat-number" data-target="98">0</div>
-        <div class="stat-label suffix-percent">Satisfaction Rate</div>
-      </div>
-      <div class="stat-item reveal delay-200">
-        <div class="stat-number" data-target="48">0</div>
-        <div class="stat-label suffix-hr">Avg. Turnaround</div>
-      </div>
-      <div class="stat-item reveal delay-300">
-        <div class="stat-number" data-target="7">0</div>
-        <div class="stat-label">Cities Served</div>
-      </div>
+  <!-- ===== FREE PICKUP STRIP ===== -->
+  <div class="pickup-strip">
+    <div class="strip-inner">
+      <span class="strip-icon">🚚</span>
+      <strong>Laundry &amp; Dry Clean Pickup — Absolutely Free</strong>
+      <span class="strip-badge">Book Now</span>
     </div>
-  </section>
+  </div>
 
   <!-- ===== SERVICES SECTION ===== -->
-  <section id="services" class="section">
-    <div class="section-header reveal">
-      <div class="section-tag">What We Offer</div>
-      <h2 class="section-title">Premium Garment Services</h2>
-      <p class="section-subtitle">Every garment is treated with expert care using state-of-the-art eco-friendly technology</p>
+  <section id="services" class="section services-section">
+    <div class="section-header">
+      <div class="section-tag">Our Services</div>
+      <h2 class="section-title">What We Clean For You</h2>
+      <p class="section-subtitle">Expert care for every fabric, every garment, every home item — delivered fresh to your door</p>
     </div>
     <div class="services-grid">
-      <div class="service-card glass-panel reveal">
-        <div class="service-icon-wrap">
-          <div class="service-icon">✨</div>
-          <div class="service-icon-glow"></div>
+      <div class="srv-card reveal">
+        <div class="srv-img-wrap">
+          <div class="srv-emoji">👔</div>
         </div>
-        <h3>Bespoke Dry Cleaning</h3>
-        <p>Premium care for suits, coats, dresses, and formal wear. Biodegradable solvents that are tough on stains but gentle on delicate fabrics.</p>
-        <ul class="service-features">
-          <li>✔ Suits & Blazers</li>
-          <li>✔ Evening Gowns</li>
-          <li>✔ Leather & Suede</li>
-        </ul>
-        <div class="service-card-glow"></div>
+        <h3>Dry Cleaning</h3>
+        <p>Suits, blazers, gowns, formal wear — cleaned with eco-friendly solvents</p>
+        <a href="#schedule" class="srv-link">Book Now →</a>
       </div>
-
-      <div class="service-card glass-panel reveal delay-100">
-        <div class="service-icon-wrap">
-          <div class="service-icon">💧</div>
-          <div class="service-icon-glow"></div>
+      <div class="srv-card reveal delay-1">
+        <div class="srv-img-wrap" style="background:#fff7ed;">
+          <div class="srv-emoji">👗</div>
         </div>
-        <h3>Eco-Friendly Wet Cleaning</h3>
-        <p>Advanced water-based cleaning for cashmere, silk, and wool. Safe for sensitive skin and leaves garments feeling fresh and soft.</p>
-        <ul class="service-features">
-          <li>✔ Silk & Cashmere</li>
-          <li>✔ Baby Clothes</li>
-          <li>✔ Delicate Fabrics</li>
-        </ul>
-        <div class="service-card-glow"></div>
+        <h3>Premium Laundry</h3>
+        <p>Everyday clothes washed, dried and folded to perfection</p>
+        <a href="#schedule" class="srv-link">Book Now →</a>
       </div>
-
-      <div class="service-card glass-panel reveal delay-200">
-        <div class="service-icon-wrap">
-          <div class="service-icon">👔</div>
-          <div class="service-icon-glow"></div>
+      <div class="srv-card reveal delay-2">
+        <div class="srv-img-wrap" style="background:#f0fdf4;">
+          <div class="srv-emoji">🥻</div>
         </div>
-        <h3>Expert Steam Pressing</h3>
-        <p>Crisp collar pressing, hand finishing and professional steam shaping. Every garment returned perfectly formed on wooden hangers.</p>
-        <ul class="service-features">
-          <li>✔ Collar Pressing</li>
-          <li>✔ Steam Finishing</li>
-          <li>✔ Shirt Folding</li>
-        </ul>
-        <div class="service-card-glow"></div>
+        <h3>Saree & Ethnic Wear</h3>
+        <p>Delicate silk sarees, lehengas, sherwanis handled with expert care</p>
+        <a href="#schedule" class="srv-link">Book Now →</a>
       </div>
-
-      <div class="service-card glass-panel reveal delay-300">
-        <div class="service-icon-wrap">
-          <div class="service-icon">🛋️</div>
-          <div class="service-icon-glow"></div>
+      <div class="srv-card reveal">
+        <div class="srv-img-wrap" style="background:#fdf4ff;">
+          <div class="srv-emoji">🧤</div>
+        </div>
+        <h3>Woolen Dry Clean</h3>
+        <p>Cashmere, wool, sweaters — safe cleaning that keeps shape & softness</p>
+        <a href="#schedule" class="srv-link">Book Now →</a>
+      </div>
+      <div class="srv-card reveal delay-1">
+        <div class="srv-img-wrap" style="background:#fefce8;">
+          <div class="srv-emoji">👟</div>
+        </div>
+        <h3>Shoe Cleaning</h3>
+        <p>Sneakers, leather shoes, sports shoes — cleaned, polished & restored</p>
+        <a href="#schedule" class="srv-link">Book Now →</a>
+      </div>
+      <div class="srv-card reveal delay-2">
+        <div class="srv-img-wrap" style="background:#fff1f2;">
+          <div class="srv-emoji">🛋️</div>
         </div>
         <h3>Home Furnishings</h3>
-        <p>Professional cleaning for curtains, sofa covers, bedding sets and carpets. Restore your home to showroom freshness.</p>
-        <ul class="service-features">
-          <li>✔ Curtains & Drapes</li>
-          <li>✔ Bedding & Duvets</li>
-          <li>✔ Carpets & Rugs</li>
-        </ul>
-        <div class="service-card-glow"></div>
-      </div>
-
-      <div class="service-card glass-panel reveal delay-100">
-        <div class="service-icon-wrap">
-          <div class="service-icon">🧵</div>
-          <div class="service-icon-glow"></div>
-        </div>
-        <h3>Stain Removal</h3>
-        <p>Specialized stain treatment for wine, oil, ink, curry and stubborn marks. Our expert technicians handle even the toughest stains.</p>
-        <ul class="service-features">
-          <li>✔ Food & Beverage</li>
-          <li>✔ Ink & Dye</li>
-          <li>✔ Oil & Grease</li>
-        </ul>
-        <div class="service-card-glow"></div>
-      </div>
-
-      <div class="service-card glass-panel reveal delay-200">
-        <div class="service-icon-wrap">
-          <div class="service-icon">🚚</div>
-          <div class="service-icon-glow"></div>
-        </div>
-        <h3>Free Pickup & Delivery</h3>
-        <p>Convenient doorstep pickup and delivery at no extra cost. Schedule your slot online and our concierge will be there on time.</p>
-        <ul class="service-features">
-          <li>✔ Same City Delivery</li>
-          <li>✔ 2-Hour Windows</li>
-          <li>✔ Real-time Tracking</li>
-        </ul>
-        <div class="service-card-glow"></div>
+        <p>Curtains, sofa covers, blankets, carpets — home-fresh results</p>
+        <a href="#schedule" class="srv-link">Book Now →</a>
       </div>
     </div>
   </section>
 
   <!-- ===== HOW IT WORKS ===== -->
-  <section id="how-it-works" class="section how-section">
-    <div class="section-header reveal">
-      <div class="section-tag">Simple Process</div>
-      <h2 class="section-title">How It Works</h2>
-      <p class="section-subtitle">From your wardrobe to our expert hands — and back, fresh and flawless</p>
-    </div>
-    <div class="steps-container">
-      <div class="step-connector"></div>
-      <div class="step reveal">
-        <div class="step-num">01</div>
-        <div class="step-icon">📅</div>
-        <h3>Schedule Online</h3>
-        <p>Choose your pickup date, time slot, and garment types through our easy booking form — takes less than 2 minutes.</p>
+  <section id="how-it-works" class="section hiw-section">
+    <div class="hiw-inner">
+      <div class="section-header">
+        <div class="section-tag">Simple & Easy</div>
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">From your wardrobe to our expert hands — and back, perfectly clean</p>
       </div>
-      <div class="step reveal delay-100">
-        <div class="step-num">02</div>
-        <div class="step-icon">🚗</div>
-        <h3>We Pick Up</h3>
-        <p>Our uniformed concierge arrives at your doorstep within your chosen 2-hour window. Garments are tagged and bagged.</p>
-      </div>
-      <div class="step reveal delay-200">
-        <div class="step-num">03</div>
-        <div class="step-icon">🧪</div>
-        <h3>Expert Cleaning</h3>
-        <p>Your garments are cleaned using eco-friendly solvents and hand-finished by our expert technicians. Track live online.</p>
-      </div>
-      <div class="step reveal delay-300">
-        <div class="step-num">04</div>
-        <div class="step-icon">✨</div>
-        <h3>Delivered Fresh</h3>
-        <p>Clothes returned in 24-48 hours, fresh on hangers, wrapped in protective covers. Ready to wear — perfectly.</p>
+      <div class="hiw-steps">
+        <div class="hiw-step reveal">
+          <div class="hiw-num">1</div>
+          <div class="hiw-icon">📅</div>
+          <h3>Schedule Pickup</h3>
+          <p>Fill the booking form and choose your date & time slot. Takes just 2 minutes.</p>
+        </div>
+        <div class="hiw-arrow">→</div>
+        <div class="hiw-step reveal delay-1">
+          <div class="hiw-num">2</div>
+          <div class="hiw-icon">🚗</div>
+          <h3>We Collect</h3>
+          <p>Our team arrives at your door on time and picks up your clothes safely.</p>
+        </div>
+        <div class="hiw-arrow">→</div>
+        <div class="hiw-step reveal delay-2">
+          <div class="hiw-num">3</div>
+          <div class="hiw-icon">✨</div>
+          <h3>Expert Cleaning</h3>
+          <p>Garments are cleaned with premium eco-friendly solvents by our experts.</p>
+        </div>
+        <div class="hiw-arrow">→</div>
+        <div class="hiw-step reveal delay-3">
+          <div class="hiw-num">4</div>
+          <div class="hiw-icon">🎁</div>
+          <h3>Delivered Fresh</h3>
+          <p>Clean, pressed clothes delivered in 24-48 hours. Ready to wear!</p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ===== TESTIMONIALS ===== -->
-  <section class="section testimonials-section">
-    <div class="section-header reveal">
-      <div class="section-tag">Customer Love</div>
+  <section class="section reviews-section">
+    <div class="section-header">
+      <div class="section-tag">Customer Love ❤️</div>
       <h2 class="section-title">What Our Customers Say</h2>
     </div>
-    <div class="testimonials-grid">
-      <div class="testimonial-card glass-panel reveal">
-        <div class="stars">⭐⭐⭐⭐⭐</div>
-        <p>"Mercury saved my wedding sherwani from a catastrophic curry stain the night before the ceremony. Absolute lifesavers!"</p>
-        <div class="testimonial-author">
-          <div class="author-avatar">RS</div>
-          <div>
-            <strong>Rahul Sharma</strong>
-            <small>Mumbai</small>
-          </div>
-        </div>
-      </div>
-      <div class="testimonial-card glass-panel reveal delay-100">
-        <div class="stars">⭐⭐⭐⭐⭐</div>
-        <p>"The best dry cleaners I've ever used. My silk sarees come back looking brand new every time. Highly recommend!"</p>
-        <div class="testimonial-author">
-          <div class="author-avatar">PK</div>
+    <div class="reviews-grid">
+      <div class="review-card reveal">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p>"My silk sarees come back looking brand new every single time. The packaging is so premium. Absolutely love Mercury Cleaners!"</p>
+        <div class="review-author">
+          <div class="author-av">PK</div>
           <div>
             <strong>Priya Kumar</strong>
             <small>Delhi</small>
           </div>
         </div>
       </div>
-      <div class="testimonial-card glass-panel reveal delay-200">
-        <div class="stars">⭐⭐⭐⭐⭐</div>
-        <p>"Incredible service! Picked up on time, delivered perfectly pressed. The live tracking is a game changer for busy professionals."</p>
-        <div class="testimonial-author">
-          <div class="author-avatar">AJ</div>
+      <div class="review-card reveal delay-1">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p>"Used it for my wedding sherwani. They removed the stain completely and returned it on a beautiful wooden hanger. 10/10!"</p>
+        <div class="review-author">
+          <div class="author-av">RS</div>
+          <div>
+            <strong>Rahul Sharma</strong>
+            <small>Mumbai</small>
+          </div>
+        </div>
+      </div>
+      <div class="review-card reveal delay-2">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p>"Pickup and delivery was so smooth. Live tracking is amazing. My office suits are always crisp. Best dry cleaning service!"</p>
+        <div class="review-author">
+          <div class="author-av">AJ</div>
           <div>
             <strong>Ankit Joshi</strong>
             <small>Bangalore</small>
@@ -366,195 +294,179 @@
     </div>
   </section>
 
-  <!-- ===== BOOKING FORM SECTION ===== -->
+  <!-- ===== BOOKING FORM ===== -->
   <section id="schedule" class="section booking-section">
     <div class="booking-wrapper">
-      <div class="booking-info reveal">
-        <div class="section-tag">Book a Slot</div>
-        <h2 class="section-title">Schedule a Free Pickup</h2>
-        <p>Our concierge will collect your garments, handle them with expert care, and deliver them back looking perfect.</p>
+      <div class="booking-left reveal">
+        <div class="section-tag">Free Pickup</div>
+        <h2 class="section-title">Schedule a Pickup</h2>
+        <p>Our concierge arrives at your door in a chosen 2-hour window. Free pickup, expert care, fresh delivery.</p>
         <ul class="booking-perks">
-          <li><span>✔</span> Free doorstep pickup & delivery</li>
-          <li><span>✔</span> 24-48 hour turnaround time</li>
-          <li><span>✔</span> Real-time SMS & email tracking</li>
-          <li><span>✔</span> Eco-friendly certified solvents</li>
-          <li><span>✔</span> 100% satisfaction guarantee</li>
+          <li><span class="perk-check">✔</span> Free doorstep pickup & delivery</li>
+          <li><span class="perk-check">✔</span> 24-48 hour turnaround</li>
+          <li><span class="perk-check">✔</span> Real-time SMS tracking</li>
+          <li><span class="perk-check">✔</span> Eco-friendly certified solvents</li>
+          <li><span class="perk-check">✔</span> 100% satisfaction guarantee</li>
         </ul>
-      </div>
-      <div class="booking-form-wrap reveal delay-200">
-        <div class="glass-panel booking-form-card">
-          <h3 class="form-heading">📅 Book Your Pickup</h3>
-          <form id="pickup-form" novalidate>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="customerName">Full Name</label>
-                <input type="text" id="customerName" name="customerName" placeholder="e.g. Rahul Sharma" required minlength="2">
-                <span class="form-error">❌ Please enter your name.</span>
-              </div>
-              <div class="form-group">
-                <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" value="+91 " placeholder="e.g. +91 9999999999" required pattern="\+91[0-9]{10}|\+91\s[0-9]{10}|[0-9]{10}">
-                <span class="form-error">❌ Enter a valid Indian phone number.</span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="email">Email Address</label>
-              <input type="email" id="email" name="email" placeholder="e.g. rahul@example.com" required>
-              <span class="form-error">❌ Please enter a valid email address.</span>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="pickupDate">Pickup Date</label>
-                <input type="date" id="pickupDate" name="pickupDate" required>
-                <span class="form-error">❌ Please select a future date.</span>
-              </div>
-              <div class="form-group">
-                <label for="pickupTime">Time Window</label>
-                <select id="pickupTime" name="pickupTime" required>
-                  <option value="" disabled selected>Select time</option>
-                  <option value="09:00 - 11:00">09:00 – 11:00 (Morning)</option>
-                  <option value="11:00 - 13:00">11:00 – 13:00 (Mid-Day)</option>
-                  <option value="14:00 - 16:00">14:00 – 16:00 (Afternoon)</option>
-                  <option value="16:00 - 18:00">16:00 – 18:00 (Evening)</option>
-                </select>
-                <span class="form-error">❌ Please select a time slot.</span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Select Garment Types</label>
-              <div class="garment-grid">
-                <div class="garment-checkbox">
-                  <input type="checkbox" id="g-suits" name="garmentTypes" value="Suits">
-                  <label for="g-suits" class="garment-label">💼 Suits</label>
-                </div>
-                <div class="garment-checkbox">
-                  <input type="checkbox" id="g-shirts" name="garmentTypes" value="Shirts">
-                  <label for="g-shirts" class="garment-label">👔 Shirts</label>
-                </div>
-                <div class="garment-checkbox">
-                  <input type="checkbox" id="g-dresses" name="garmentTypes" value="Dresses">
-                  <label for="g-dresses" class="garment-label">👗 Dresses</label>
-                </div>
-                <div class="garment-checkbox">
-                  <input type="checkbox" id="g-coats" name="garmentTypes" value="Coats">
-                  <label for="g-coats" class="garment-label">🧥 Coats</label>
-                </div>
-                <div class="garment-checkbox">
-                  <input type="checkbox" id="g-sarees" name="garmentTypes" value="Sarees">
-                  <label for="g-sarees" class="garment-label">🥻 Sarees</label>
-                </div>
-                <div class="garment-checkbox">
-                  <input type="checkbox" id="g-other" name="garmentTypes" value="Other">
-                  <label for="g-other" class="garment-label">📦 Others</label>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="garmentCount">Garment Count</label>
-                <input type="number" id="garmentCount" name="garmentCount" min="1" max="50" value="1" required>
-                <span class="form-error">❌ Count must be 1–50.</span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="specialInstructions">Special Instructions <span style="color:var(--text-dark); font-weight:400;">(optional)</span></label>
-              <textarea id="specialInstructions" name="specialInstructions" rows="2" placeholder="e.g. Handle silk lining with care, remove wine stain from collar..."></textarea>
-            </div>
-
-            <button type="submit" id="submit-btn" class="btn-primary btn-submit">
-              <span>🚀</span> Confirm Pickup Request
-            </button>
-          </form>
+        <div class="booking-hotline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.22a2 2 0 012-2.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11l-1.27 1.27a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          <span>+91 86308 41017</span>
         </div>
+      </div>
+
+      <div class="booking-form-wrap reveal delay-2">
+        <form id="pickup-form" novalidate>
+          <h3 class="form-title">📅 Book Your Free Pickup</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="customerName">Full Name</label>
+              <input type="text" id="customerName" name="customerName" placeholder="e.g. Rahul Sharma" required minlength="2">
+              <span class="form-error">❌ Please enter your name.</span>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" value="+91 " placeholder="+91 9999999999" required pattern="\+91[0-9]{10}|\+91\s[0-9]{10}|[0-9]{10}">
+              <span class="form-error">❌ Enter valid Indian number.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="e.g. rahul@example.com" required>
+            <span class="form-error">❌ Enter a valid email address.</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="pickupDate">Pickup Date</label>
+              <input type="date" id="pickupDate" name="pickupDate" required>
+              <span class="form-error">❌ Please select a future date.</span>
+            </div>
+            <div class="form-group">
+              <label for="pickupTime">Time Window</label>
+              <select id="pickupTime" name="pickupTime" required>
+                <option value="" disabled selected>Select slot</option>
+                <option value="09:00 - 11:00">09:00 – 11:00 (Morning)</option>
+                <option value="11:00 - 13:00">11:00 – 13:00 (Mid-Day)</option>
+                <option value="14:00 - 16:00">14:00 – 16:00 (Afternoon)</option>
+                <option value="16:00 - 18:00">16:00 – 18:00 (Evening)</option>
+              </select>
+              <span class="form-error">❌ Please select a time slot.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Select Garment Types</label>
+            <div class="garment-grid">
+              <div class="garment-checkbox"><input type="checkbox" id="g-suits" name="garmentTypes" value="Suits"><label for="g-suits" class="garment-label">💼 Suits</label></div>
+              <div class="garment-checkbox"><input type="checkbox" id="g-shirts" name="garmentTypes" value="Shirts"><label for="g-shirts" class="garment-label">👔 Shirts</label></div>
+              <div class="garment-checkbox"><input type="checkbox" id="g-dresses" name="garmentTypes" value="Dresses"><label for="g-dresses" class="garment-label">👗 Dresses</label></div>
+              <div class="garment-checkbox"><input type="checkbox" id="g-coats" name="garmentTypes" value="Coats"><label for="g-coats" class="garment-label">🧥 Coats</label></div>
+              <div class="garment-checkbox"><input type="checkbox" id="g-sarees" name="garmentTypes" value="Sarees"><label for="g-sarees" class="garment-label">🥻 Sarees</label></div>
+              <div class="garment-checkbox"><input type="checkbox" id="g-shoes" name="garmentTypes" value="Shoes"><label for="g-shoes" class="garment-label">👟 Shoes</label></div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="garmentCount">Garment Count</label>
+              <input type="number" id="garmentCount" name="garmentCount" min="1" max="50" value="1" required>
+              <span class="form-error">❌ Enter 1–50 items.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="specialInstructions">Special Instructions <small>(optional)</small></label>
+            <textarea id="specialInstructions" name="specialInstructions" rows="2" placeholder="e.g. Handle silk lining carefully, remove wine stain..."></textarea>
+          </div>
+
+          <button type="submit" id="submit-btn" class="btn-book btn-submit-full">
+            🚀 Confirm Free Pickup Request
+          </button>
+        </form>
       </div>
     </div>
   </section>
 
   <!-- ===== SUCCESS DIALOG ===== -->
   <dialog id="confirmation-dialog">
-    <div class="dialog-content glass-panel">
-      <div class="dialog-icon">✓</div>
+    <div class="dialog-inner">
+      <div class="dialog-check">✓</div>
       <h3>Pickup Booked! 🎉</h3>
-      <p>Your concierge request has been accepted. We'll be at your doorstep on your scheduled date.</p>
+      <p>Your concierge is on the way on your scheduled date. You'll get an SMS confirmation shortly.</p>
       <div class="dialog-details">
-        <div class="detail-row">
-          <span>Order ID</span>
-          <span id="conf-order-id" class="detail-val">MERC-XXXX</span>
-        </div>
-        <div class="detail-row">
-          <span>Date</span>
-          <span id="conf-date" class="detail-val">—</span>
-        </div>
-        <div class="detail-row">
-          <span>Time Window</span>
-          <span id="conf-time" class="detail-val">—</span>
-        </div>
+        <div class="d-row"><span>Order ID</span><span id="conf-order-id" class="d-val">MERC-XXXX</span></div>
+        <div class="d-row"><span>Date</span><span id="conf-date" class="d-val">—</span></div>
+        <div class="d-row"><span>Time Window</span><span id="conf-time" class="d-val">—</span></div>
       </div>
       <div class="dialog-actions">
-        <a id="track-order-link" href="#" class="btn-primary">📦 Track My Order</a>
-        <button id="close-dialog-btn" class="btn-ghost">Close</button>
+        <a id="track-order-link" href="#" class="btn-book">📦 Track My Order</a>
+        <button id="close-dialog-btn" class="btn-outline-dialog">Close</button>
       </div>
     </div>
   </dialog>
 
   <!-- ===== FOOTER ===== -->
   <footer class="main-footer">
-    <div class="footer-grid">
+    <div class="footer-top">
       <div class="footer-brand">
         <a href="index.html" class="logo">
-          <div class="logo-icon"><span>M</span></div>
-          <div class="logo-text">Mercury <span>Dry Cleaners</span></div>
+          <div class="logo-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="16" fill="#f97316"/>
+              <text x="16" y="21" text-anchor="middle" fill="white" font-size="14" font-weight="800" font-family="Outfit">M</text>
+            </svg>
+          </div>
+          <div class="logo-text">Mercury<span>Cleaners</span></div>
         </a>
-        <p>India's premium eco-friendly garment care service. Trusted by thousands across major cities.</p>
+        <p>India's premium eco-friendly garment care. Trusted by thousands across major cities.</p>
         <div class="footer-badges">
-          <span class="badge-pill">🌿 Eco Certified</span>
-          <span class="badge-pill">🏆 Award Winning</span>
+          <span>🌿 Eco Certified</span>
+          <span>🏆 Award Winning</span>
+          <span>📱 App Coming Soon</span>
         </div>
       </div>
       <div class="footer-links">
         <h4>Services</h4>
         <ul>
           <li><a href="#services">Dry Cleaning</a></li>
-          <li><a href="#services">Wet Cleaning</a></li>
-          <li><a href="#services">Steam Pressing</a></li>
-          <li><a href="#services">Stain Removal</a></li>
+          <li><a href="#services">Premium Laundry</a></li>
+          <li><a href="#services">Saree Care</a></li>
+          <li><a href="#services">Shoe Cleaning</a></li>
           <li><a href="#services">Home Furnishings</a></li>
         </ul>
       </div>
       <div class="footer-links">
-        <h4>Account</h4>
+        <h4>Quick Links</h4>
         <ul>
           <li><a href="customer-login.html">Sign In</a></li>
           <li><a href="customer-login.html">Create Account</a></li>
-          <li><a href="track.html">Track Order</a></li>
+          <li><a href="track.html">Track My Order</a></li>
           <li><a href="#schedule">Book Pickup</a></li>
         </ul>
       </div>
       <div class="footer-contact">
-        <h4>Contact</h4>
+        <h4>Contact Us</h4>
         <ul>
           <li>📞 +91 86308 41017</li>
           <li>✉️ care@mercurycleaners.in</li>
-          <li>📍 Mumbai, Delhi, Bangalore</li>
-          <li>🕐 Mon–Sat: 8am–8pm</li>
+          <li>📍 Mumbai · Delhi · Bangalore</li>
+          <li>🕐 Mon–Sat: 8am – 8pm</li>
         </ul>
+        <a href="https://wa.me/918630841017" target="_blank" class="btn-whatsapp-footer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Chat on WhatsApp
+        </a>
       </div>
     </div>
     <div class="footer-bottom">
       <p>© 2026 Mercury Dry Cleaners. All rights reserved.</p>
-      <p>Built with ♥ for India's finest garments.</p>
+      <p>Made with ♥ for India's finest garments.</p>
     </div>
   </footer>
 
   <script src="js/booking.js"></script>
   <script src="js/animations.js"></script>
-
-  <!-- Auth state -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
