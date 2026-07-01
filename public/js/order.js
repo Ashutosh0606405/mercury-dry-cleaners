@@ -10,6 +10,21 @@ import { firebaseConfig } from "./firebase-config.js";
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
+// ── EMAILJS CONFIGURATION (FOR ORDER CONFIRMATIONS) ───────────────────────────
+const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY"; 
+const EMAILJS_SERVICE_ID = "YOUR_EMAILJS_SERVICE_ID"; 
+const EMAILJS_TEMPLATE_CONFIRMATION = "YOUR_EMAILJS_TEMPLATE_CONFIRMATION"; 
+
+// Dynamic script loader for EmailJS
+if (EMAILJS_PUBLIC_KEY !== "YOUR_EMAILJS_PUBLIC_KEY") {
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+  script.onload = () => {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  };
+  document.head.appendChild(script);
+}
+
 // ── Service catalogue with prices ────────────────────────────────────────────
 const SERVICES = [
   { id: 'shirt',    name: 'Shirt',    icon: '👔', price: 100 },
@@ -151,6 +166,31 @@ function setupForm() {
 
     try {
       await addDoc(collection(db, 'orders'), orderData);
+
+      // ── Send Email confirmation to customer via EmailJS ────────────────
+      if (window.emailjs && EMAILJS_PUBLIC_KEY !== "YOUR_EMAILJS_PUBLIC_KEY") {
+        const itemsList = orderData.items.map(i => `${i.name} (${i.qty})`).join(', ');
+        const detailsText = `Garments: ${itemsList}\nPickup Address: ${orderData.address}\nSpecial Instructions: ${orderData.notes || 'None'}`;
+        
+        const emailParams = {
+          to_name: orderData.customerName,
+          to_email: orderData.email,
+          order_id: orderId,
+          pickup_date: "Immediate (From order form)",
+          pickup_time: "Same day",
+          details: detailsText,
+          total_amount: `₹${total}`,
+          admin_email: 'naveensethi2007@yahoo.com'
+        };
+
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_CONFIRMATION, emailParams)
+          .then(() => {
+            console.log('Order confirmation email sent to', orderData.email);
+          })
+          .catch((err) => {
+            console.error('EmailJS order confirmation failed:', err);
+          });
+      }
 
       // Show success dialog
       dialogId.textContent  = orderId;

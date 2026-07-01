@@ -36,9 +36,9 @@
 
       <form id="admin-login-form" novalidate>
         <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" placeholder="e.g. admin" required autocomplete="username">
-          <span class="form-error">❌ Username is required.</span>
+          <label for="email">Admin Email</label>
+          <input type="email" id="email" name="email" placeholder="e.g. naveensethi2007@yahoo.com" required autocomplete="email">
+          <span class="form-error">❌ Valid email is required.</span>
         </div>
 
         <div class="form-group" style="margin-bottom: 2rem;">
@@ -59,42 +59,50 @@
     <p>&copy; 2026 Mercury Dry Cleaners. Security logged session.</p>
   </footer>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { firebaseConfig } from "./js/firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const ADMIN_EMAILS = [
+      'naveensethi2007@yahoo.com',
+      'admin@mercurycleaners.in'
+    ];
+
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('admin-login-form');
       const errorContainer = document.getElementById('login-error-container');
       const errorText = document.getElementById('login-error-text');
       const submitBtn = document.getElementById('login-btn');
       
-      // Hide error container on start
       errorContainer.style.display = 'none';
 
-      // Redirect if already logged in
-      fetch('/api/auth/status')
-        .then(res => res.json())
-        .then(data => {
-          if (data.authenticated) {
-            window.location.href = 'admin.html';
-          }
-        });
+      // Redirect if already logged in as admin
+      onAuthStateChanged(auth, (user) => {
+        if (user && ADMIN_EMAILS.includes(user.email)) {
+          window.location.href = 'admin.html';
+        }
+      });
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         errorContainer.style.display = 'none';
         
-        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         
         let isValid = true;
         
-        if (!usernameInput.value.trim()) {
-          usernameInput.setAttribute('aria-invalid', 'true');
-          usernameInput.classList.add('user-invalid-fallback');
+        if (!emailInput.value.trim() || !emailInput.checkValidity()) {
+          emailInput.setAttribute('aria-invalid', 'true');
+          emailInput.classList.add('user-invalid-fallback');
           isValid = false;
         } else {
-          usernameInput.removeAttribute('aria-invalid');
-          usernameInput.classList.remove('user-invalid-fallback');
+          emailInput.removeAttribute('aria-invalid');
+          emailInput.classList.remove('user-invalid-fallback');
         }
         
         if (!passwordInput.value.trim()) {
@@ -112,27 +120,22 @@
         submitBtn.textContent = 'Authenticating...';
         
         try {
-          const res = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              username: usernameInput.value,
-              password: passwordInput.value
-            })
-          });
+          const userCredential = await signInWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
+          const user = userCredential.user;
           
-          const data = await res.json();
-          
-          if (!res.ok) {
-            throw new Error(data.error || 'Login failed.');
+          if (!ADMIN_EMAILS.includes(user.email)) {
+            throw new Error('Access denied. You do not have administrator permissions.');
           }
           
-          // Redirect to admin panel
           window.location.href = 'admin.html';
           
         } catch (err) {
           console.error(err);
-          errorText.textContent = err.message;
+          let friendlyMessage = err.message;
+          if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+            friendlyMessage = 'Invalid email or password.';
+          }
+          errorText.textContent = friendlyMessage;
           errorContainer.style.display = 'flex';
           submitBtn.disabled = false;
           submitBtn.textContent = 'Authenticate Access';
