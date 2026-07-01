@@ -1,5 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import {
   getFirestore,
   collection,
   addDoc,
@@ -9,6 +13,17 @@ import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
+const auth = getAuth(app);
+
+// Update Auth Button State
+onAuthStateChanged(auth, (user) => {
+  const btn = document.getElementById('auth-nav-btn');
+  if (user && btn) {
+    btn.textContent = 'My Account';
+    btn.href = 'customer.html';
+  }
+});
+
 
 
 // ── Service catalogue with prices ────────────────────────────────────────────
