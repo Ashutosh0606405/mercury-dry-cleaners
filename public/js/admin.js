@@ -5,7 +5,8 @@ import {
   collection,
   getDocs,
   doc,
-  updateDoc
+  updateDoc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -391,5 +392,109 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     detailsDialog.showModal();
+  }
+
+  // --- Pricing Manager Setup ---
+  const pricingBtn = document.getElementById('manage-pricing-btn');
+  const pricingDialog = document.getElementById('pricing-manager-dialog');
+  const pricingForm = document.getElementById('pricing-form');
+  const pricingContainer = document.getElementById('pricing-inputs-container');
+  const closePricingBtn = document.getElementById('close-pricing-btn');
+  const cancelPricingBtn = document.getElementById('cancel-pricing-btn');
+
+  const DEFAULT_SERVICES = [
+    { id: 'shirt',    name: 'Shirt',    icon: '👔', price: 100 },
+    { id: 'trousers', name: 'Trousers', icon: '👖', price: 150 },
+    { id: 'suit',     name: 'Suit',     icon: '🤵', price: 250 },
+    { id: 'saree',    name: 'Saree',    icon: '🥻', price: 350 },
+    { id: 'coat',     name: 'Coat',     icon: '🧥', price: 500 },
+    { id: 'shoes',    name: 'Shoes',    icon: '👟', price: 200 },
+    { id: 'dresses',  name: 'Dresses',  icon: '👗', price: 300 },
+  ];
+
+  let currentServices = [];
+
+  if (pricingBtn && pricingDialog) {
+    pricingBtn.addEventListener('click', async () => {
+      pricingContainer.innerHTML = '<p style="text-align:center; padding:1rem; color:var(--text-muted);">Syncing current prices...</p>';
+      pricingDialog.showModal();
+
+      try {
+        const snap = await getDocs(collection(db, 'services'));
+        currentServices = [];
+        if (!snap.empty) {
+          snap.forEach(docSnap => {
+            currentServices.push({
+              id: docSnap.id,
+              ...docSnap.data()
+            });
+          });
+          // Sort to keep order consistent
+          currentServices.sort((a, b) => {
+            const indexA = DEFAULT_SERVICES.findIndex(ds => ds.id === a.id);
+            const indexB = DEFAULT_SERVICES.findIndex(ds => ds.id === b.id);
+            return indexA - indexB;
+          });
+        } else {
+          // Fallback to defaults
+          currentServices = [...DEFAULT_SERVICES];
+        }
+
+        pricingContainer.innerHTML = currentServices.map(s => `
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,0,0,0.03); padding-bottom:0.6rem;">
+            <span style="font-size:0.95rem; font-weight:500; display:flex; align-items:center; gap:0.6rem;">
+              <span style="font-size:1.2rem;">${s.icon || '🧺'}</span> ${s.name}
+            </span>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <span style="font-size:0.9rem; font-weight:600; color:var(--text-muted);">₹</span>
+              <input type="number" name="${s.id}" value="${s.price}" min="0" required style="width:100px; padding:0.4rem 0.6rem; border:1px solid var(--border-color); border-radius:6px; font-weight:600; text-align:right; outline:none; font-family:inherit;">
+            </div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        console.error('Error fetching services:', err);
+        pricingContainer.innerHTML = `<p style="text-align:center; padding:1rem; color:var(--error);">Error: ${err.message}</p>`;
+      }
+    });
+  }
+
+  if (closePricingBtn && pricingDialog) {
+    closePricingBtn.addEventListener('click', () => pricingDialog.close());
+  }
+  if (cancelPricingBtn && pricingDialog) {
+    cancelPricingBtn.addEventListener('click', () => pricingDialog.close());
+  }
+
+  if (pricingForm && pricingDialog) {
+    pricingForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = pricingForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving...';
+
+      try {
+        const formData = new FormData(pricingForm);
+        for (const [serviceId, priceVal] of formData.entries()) {
+          const s = currentServices.find(item => item.id === serviceId);
+          if (s) {
+            await setDoc(doc(db, 'services', serviceId), {
+              name: s.name,
+              icon: s.icon || '🧺',
+              price: Number(priceVal)
+            });
+          }
+        }
+        alert('Pricing successfully updated in database!');
+        pricingDialog.close();
+      } catch (err) {
+        console.error('Error saving pricing:', err);
+        alert(`Failed to save pricing: ${err.message}`);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    });
   }
 });

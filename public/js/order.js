@@ -7,7 +7,10 @@ import {
   getFirestore,
   collection,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
+  getDocs,
+  doc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -24,10 +27,39 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-
+// Load pricing dynamically from Firestore
+async function loadPricing() {
+  try {
+    const snap = await getDocs(collection(db, 'services'));
+    if (!snap.empty) {
+      const dbServices = [];
+      snap.forEach(docSnap => {
+        dbServices.push({
+          id: docSnap.id,
+          ...docSnap.data()
+        });
+      });
+      SERVICES.forEach(s => {
+        const found = dbServices.find(dbS => dbS.id === s.id);
+        if (found) s.price = Number(found.price);
+      });
+    } else {
+      // Seed default prices into database
+      for (const s of SERVICES) {
+        await setDoc(doc(db, 'services', s.id), {
+          name: s.name,
+          icon: s.icon,
+          price: s.price
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Error loading dynamic pricing:', err);
+  }
+}
 
 // ── Service catalogue with prices ────────────────────────────────────────────
-const SERVICES = [
+let SERVICES = [
   { id: 'shirt',    name: 'Shirt',    icon: '👔', price: 100 },
   { id: 'trousers', name: 'Trousers', icon: '👖', price: 150 },
   { id: 'suit',     name: 'Suit',     icon: '🤵', price: 250 },
@@ -222,7 +254,9 @@ function setupForm() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  buildTable();
-  updateSummary();
-  setupForm();
+  loadPricing().then(() => {
+    buildTable();
+    updateSummary();
+    setupForm();
+  });
 });
