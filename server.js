@@ -174,6 +174,10 @@ apiRouter.post('/auth/login', async (req, res) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
+    if (user.email !== 'mercurydrycleaners22@gmail.com') {
+      return res.status(403).json({ error: 'Access denied. You do not have administrator permissions.' });
+    }
+
     // Generate secure session token mapping to this session
     const crypto = require('crypto');
     const token = crypto.randomBytes(32).toString('hex');

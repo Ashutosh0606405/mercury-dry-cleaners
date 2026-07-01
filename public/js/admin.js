@@ -14,11 +14,7 @@ import { firebaseConfig } from "./firebase-config.js";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
-const ADMIN_EMAILS = [
-  'naveensethi2007@yahoo.com',
-  'admin@mercurycleaners.in'
-];
+const ALLOWED_ADMIN_EMAIL = 'mercurydrycleaners22@gmail.com';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -40,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Auth check
   function checkAuth() {
     onAuthStateChanged(auth, (user) => {
-      if (!user || !ADMIN_EMAILS.includes(user.email)) {
+      if (!user || user.email !== ALLOWED_ADMIN_EMAIL) {
         window.location.href = 'admin-login.html';
         return;
       }

@@ -37,7 +37,7 @@
       <form id="admin-login-form" novalidate>
         <div class="form-group">
           <label for="email">Admin Email</label>
-          <input type="email" id="email" name="email" placeholder="e.g. naveensethi2007@yahoo.com" required autocomplete="email">
+          <input type="email" id="email" name="email" placeholder="e.g. mercurydrycleaners22@gmail.com" required autocomplete="email">
           <span class="form-error">❌ Valid email is required.</span>
         </div>
 
@@ -67,10 +67,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const ADMIN_EMAILS = [
-      'naveensethi2007@yahoo.com',
-      'admin@mercurycleaners.in'
-    ];
+    const ALLOWED_ADMIN_EMAIL = 'mercurydrycleaners22@gmail.com';
 
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('admin-login-form');
@@ -82,7 +79,7 @@
 
       // Redirect if already logged in as admin
       onAuthStateChanged(auth, (user) => {
-        if (user && ADMIN_EMAILS.includes(user.email)) {
+        if (user && user.email === ALLOWED_ADMIN_EMAIL) {
           window.location.href = 'admin.html';
         }
       });
@@ -123,11 +120,12 @@
           const userCredential = await signInWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
           const user = userCredential.user;
           
-          if (!ADMIN_EMAILS.includes(user.email)) {
+          if (user.email !== ALLOWED_ADMIN_EMAIL) {
             throw new Error('Access denied. You do not have administrator permissions.');
           }
           
           window.location.href = 'admin.html';
+
           
         } catch (err) {
           console.error(err);
