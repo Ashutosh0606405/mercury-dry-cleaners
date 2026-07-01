@@ -13,7 +13,7 @@
   <!-- Header -->
   <header>
     <div class="navbar">
-      <a href="index.html" class="logo">
+      <a href="admin.html" class="logo">
         <div class="logo-icon">M</div>
         Mercury <span>Operations</span>
       </a>
@@ -96,6 +96,16 @@
       </table>
     </div>
   </main>
+
+  <!-- Operations Order Details Overlay -->
+  <dialog id="order-details-dialog" style="padding:0; border:none; border-radius:20px; max-width:650px; width:90%; background:rgba(255,255,255,0.95); backdrop-filter:blur(30px); border:1px solid rgba(255,255,255,0.4); color:var(--text-dark); box-shadow:0 30px 60px rgba(0,0,0,0.25);">
+    <div style="padding:2.5rem 2rem; position:relative; font-family:var(--font-body);">
+      <button id="close-details-btn" style="position:absolute; right:1.5rem; top:1.5rem; background:rgba(0,0,0,0.05); border:none; width:36px; height:36px; border-radius:50%; font-size:1.25rem; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-muted); transition:all 0.2s;">×</button>
+      <div id="details-modal-content">
+        <!-- Dynamically populated by JavaScript -->
+      </div>
+    </div>
+  </dialog>
 
   <!-- Footer -->
   <footer>

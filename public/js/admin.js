@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `
         <tr data-doc-id="${item.docId}" data-collection="${item.collectionType}">
           <td>
-            <a href="track.html?id=${item.orderId}" style="color:var(--primary); font-family:var(--font-heading); font-weight:700; text-decoration:underline;">
+            <a href="#" class="view-details-link" data-id="${item.orderId}" style="color:var(--primary); font-family:var(--font-heading); font-weight:700; text-decoration:underline;">
               ${item.orderId}
             </a>
           </td>
@@ -186,6 +186,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const newStatus = e.target.value;
 
         await updateStatus(collectionType, docId, newStatus);
+      });
+    });
+
+    // Attach order details click listeners
+    tbody.querySelectorAll('.view-details-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const orderId = link.dataset.id;
+        openOrderDetails(orderId);
       });
     });
   }
@@ -255,4 +264,132 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = 'index.html';
     }
   });
+
+  // --- Order Details Modal Overlay Setup ---
+  const detailsDialog = document.getElementById('order-details-dialog');
+  const detailsContent = document.getElementById('details-modal-content');
+  const closeDetailsBtn = document.getElementById('close-details-btn');
+
+  if (closeDetailsBtn && detailsDialog) {
+    closeDetailsBtn.addEventListener('click', () => detailsDialog.close());
+  }
+
+  function openOrderDetails(orderId) {
+    const item = allItems.find(o => o.orderId === orderId);
+    if (!item) return;
+
+    let itemsHTML = '';
+    if (item.collectionType === 'orders' && Array.isArray(item.items)) {
+      itemsHTML = `
+        <div style="margin-top: 1.5rem;">
+          <h4 style="font-family: var(--font-heading); margin-bottom: 0.5rem; font-size: 1rem; color: var(--text-dark);">Garments & Pricing</h4>
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted);">
+                <th style="padding: 0.5rem 0;">Garment</th>
+                <th style="padding: 0.5rem 0; text-align: center;">Qty</th>
+                <th style="padding: 0.5rem 0; text-align: right;">Price</th>
+                <th style="padding: 0.5rem 0; text-align: right;">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${item.items.map(i => `
+                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                  <td style="padding: 0.5rem 0; font-weight: 500;">${i.name}</td>
+                  <td style="padding: 0.5rem 0; text-align: center;">${i.qty}</td>
+                  <td style="padding: 0.5rem 0; text-align: right;">₹${i.price}</td>
+                  <td style="padding: 0.5rem 0; text-align: right; font-weight: 600;">₹${i.subtotal}</td>
+                </tr>
+              `).join('')}
+              <tr>
+                <td colspan="3" style="padding: 0.75rem 0; font-weight: 700; text-align: right;">Total Amount:</td>
+                <td style="padding: 0.75rem 0; text-align: right; font-weight: 700; color: var(--primary); font-size: 1.05rem;">₹${item.totalAmount}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    } else {
+      const types = Array.isArray(item.garmentTypes) ? item.garmentTypes.join(', ') : (item.garmentTypes || '—');
+      itemsHTML = `
+        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.02); border-radius: 10px; border: 1px dashed var(--border-color);">
+          <h4 style="font-family: var(--font-heading); margin-bottom: 0.25rem; font-size: 0.95rem; color: var(--text-dark);">Garments to Clean</h4>
+          <p style="font-size: 0.9rem; font-weight: 500;">${types}</p>
+          <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 0.5rem;">Estimated count: <strong>${item.garmentCount || 0} items</strong></span>
+        </div>
+      `;
+    }
+
+    const instructions = item.notes || item.specialInstructions || 'None provided';
+    const currentStatus = item.status || 'Pending';
+    
+    // Format status for class
+    let badgeClass = '';
+    let badgeLabel = currentStatus;
+    switch (currentStatus.toLowerCase()) {
+      case 'pending':
+      case 'scheduled': badgeClass = 'badge-scheduled'; badgeLabel = 'Scheduled'; break;
+      case 'picked up': badgeClass = 'badge-pickedup'; badgeLabel = 'Picked Up'; break;
+      case 'in cleaning': badgeClass = 'badge-cleaning'; badgeLabel = 'In Cleaning'; break;
+      case 'ready': badgeClass = 'badge-ready'; badgeLabel = 'Ready for Delivery'; break;
+      case 'completed': badgeClass = 'badge-completed'; badgeLabel = 'Completed'; break;
+    }
+
+    // Schedule info
+    const scheduleHTML = item.pickupDate 
+      ? `<p style="font-size:0.9rem; margin-top:0.25rem;">📅 Date: <strong>${item.pickupDate}</strong> | ⏱ Slot: <strong>${item.pickupTime}</strong></p>`
+      : `<p style="font-size:0.9rem; margin-top:0.25rem; color:var(--text-muted);">Immediate Store Drop-off/Pickup</p>`;
+
+    // Customer Address
+    const addressHTML = item.address
+      ? `<div style="margin-top: 1rem;">
+          <h4 style="font-family: var(--font-heading); margin-bottom: 0.25rem; font-size: 0.95rem; color: var(--text-dark);">Delivery Address</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">📍 ${item.address}</p>
+         </div>`
+      : '';
+
+    detailsContent.innerHTML = `
+      <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem;">
+        <span class="badge ${badgeClass}" style="margin-bottom: 0.5rem; display: inline-block;">${badgeLabel}</span>
+        <h3 style="font-family: var(--font-heading); font-size: 1.5rem; color: var(--text-dark); margin: 0;">Order ${item.orderId}</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Type: ${item.collectionType === 'orders' ? 'Direct Booking & Checkout' : 'Pickup Request Schedule'}</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+        <div>
+          <h4 style="font-family: var(--font-heading); font-size: 0.95rem; color: var(--text-dark); margin: 0;">Customer</h4>
+          <p style="font-size: 0.9rem; font-weight: 600; margin-top: 0.25rem;">${item.customerName}</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">📞 ${item.phone}</p>
+          ${item.email ? `<p style="font-size: 0.85rem; color: var(--text-muted);">✉ ${item.email}</p>` : ''}
+        </div>
+        <div>
+          <h4 style="font-family: var(--font-heading); font-size: 0.95rem; color: var(--text-dark); margin: 0;">Schedule Details</h4>
+          ${scheduleHTML}
+        </div>
+      </div>
+
+      ${addressHTML}
+
+      <div style="margin-top: 1rem;">
+        <h4 style="font-family: var(--font-heading); font-size: 0.95rem; color: var(--text-dark); margin: 0;">Special Instructions</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; font-style: italic; background: rgba(0,0,0,0.02); padding: 0.75rem; border-radius: 8px;">
+          "${instructions}"
+        </p>
+      </div>
+
+      ${itemsHTML}
+
+      <div style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button id="close-modal-footer-btn" class="btn-secondary" style="padding: 0.6rem 1.25rem; border-radius: 8px; font-size: 0.85rem; cursor:pointer;">Close Details</button>
+      </div>
+    `;
+
+    // Attach click to footer close button
+    const footerCloseBtn = document.getElementById('close-modal-footer-btn');
+    if (footerCloseBtn) {
+      footerCloseBtn.addEventListener('click', () => detailsDialog.close());
+    }
+
+    detailsDialog.showModal();
+  }
 });
