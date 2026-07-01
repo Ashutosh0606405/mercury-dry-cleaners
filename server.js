@@ -5,6 +5,7 @@ const path = require('path');
 const db = require('./database');
 const { auth } = require('./firebase');
 const { signInWithEmailAndPassword } = require('firebase/auth');
+const { sendPickupConfirmation, sendOrderConfirmation, sendStatusUpdate } = require('./mailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -87,6 +88,36 @@ app.post('/api/orders/pickup', async (req, res) => {
   } catch (err) {
     console.error('Error creating order:', err);
     res.status(500).json({ error: 'An error occurred while scheduling your pickup.' });
+  }
+});
+
+// 1b. Send pickup booking confirmation email (Public)
+app.post('/api/email/pickup-confirmation', async (req, res) => {
+  try {
+    const { customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions } = req.body;
+    if (!email || !orderId) {
+      return res.status(400).json({ error: 'Missing required fields: email and orderId.' });
+    }
+    await sendPickupConfirmation({ customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions });
+    res.json({ success: true, message: 'Pickup confirmation email sent.' });
+  } catch (err) {
+    console.error('Pickup email error:', err);
+    res.status(500).json({ error: 'Failed to send confirmation email.' });
+  }
+});
+
+// 1c. Send order confirmation email (Public)
+app.post('/api/email/order-confirmation', async (req, res) => {
+  try {
+    const { customerName, email, orderId, items, totalAmount, address, notes } = req.body;
+    if (!email || !orderId) {
+      return res.status(400).json({ error: 'Missing required fields: email and orderId.' });
+    }
+    await sendOrderConfirmation({ customerName, email, orderId, items, totalAmount, address, notes });
+    res.json({ success: true, message: 'Order confirmation email sent.' });
+  } catch (err) {
+    console.error('Order email error:', err);
+    res.status(500).json({ error: 'Failed to send confirmation email.' });
   }
 });
 
@@ -231,6 +262,16 @@ app.patch('/api/admin/orders/:id', requireAuth, async (req, res) => {
     const updatedOrder = await db.updateOrderStatus(orderId, status);
     if (!updatedOrder) {
       return res.status(404).json({ error: 'Order not found.' });
+    }
+
+    // ── Send status update email to customer if they have an email ──
+    if (updatedOrder.email) {
+      sendStatusUpdate({
+        customerName: updatedOrder.customerName,
+        email: updatedOrder.email,
+        orderId: updatedOrder.id || orderId,
+        newStatus: status
+      }).catch(err => console.error('Status email failed:', err.message));
     }
 
     res.json({

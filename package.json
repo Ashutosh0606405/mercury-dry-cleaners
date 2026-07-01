@@ -13,7 +13,8 @@
     "dotenv": "^17.4.2",
     "express": "^4.19.2",
     "firebase": "^12.15.0",
-    "mongoose": "^9.7.3"
+    "mongoose": "^9.7.3",
+    "nodemailer": "^9.0.3"
   },
   "private": true
 }

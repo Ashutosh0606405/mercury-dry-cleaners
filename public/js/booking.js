@@ -10,21 +10,6 @@ import { firebaseConfig } from "./firebase-config.js";
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// ── EMAILJS CONFIGURATION (FOR BOOKING CONFIRMATIONS) ─────────────────────────
-const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY"; 
-const EMAILJS_SERVICE_ID = "YOUR_EMAILJS_SERVICE_ID"; 
-const EMAILJS_TEMPLATE_CONFIRMATION = "YOUR_EMAILJS_TEMPLATE_CONFIRMATION"; 
-
-// Dynamic script loader for EmailJS
-if (EMAILJS_PUBLIC_KEY !== "YOUR_EMAILJS_PUBLIC_KEY") {
-  const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-  script.onload = () => {
-    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  };
-  document.head.appendChild(script);
-}
-
 /** Generate a short human-readable order ID, e.g. MDC-20240701-A3F2 */
 function generateOrderId() {
   const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -127,27 +112,24 @@ document.addEventListener('DOMContentLoaded', () => {
       // ── Save directly to Firestore (no backend needed) ──────────────────
       await addDoc(collection(db, 'pickups'), orderData);
 
-      // ── Send Email confirmation to customer via EmailJS ────────────────
-      if (window.emailjs && EMAILJS_PUBLIC_KEY !== "YOUR_EMAILJS_PUBLIC_KEY") {
-        const detailsText = `Garments: ${orderData.garmentCount} items [${orderData.garmentTypes.join(', ')}]\nSpecial Instructions: ${orderData.specialInstructions || 'None'}`;
-        const emailParams = {
-          to_name: orderData.customerName,
-          to_email: orderData.email,
-          order_id: orderId,
-          pickup_date: orderData.pickupDate,
-          pickup_time: orderData.pickupTime,
-          details: detailsText,
-          admin_email: 'naveensethi2007@yahoo.com'
-        };
-
-        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_CONFIRMATION, emailParams)
-          .then(() => {
-            console.log('Pickup confirmation email sent to', orderData.email);
-          })
-          .catch((err) => {
-            console.error('EmailJS booking confirmation failed:', err);
-          });
-      }
+      // ── Send Email confirmation via Nodemailer backend ─────────────────
+      fetch('/api/email/pickup-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: orderData.customerName,
+          email: orderData.email,
+          orderId,
+          pickupDate: orderData.pickupDate,
+          pickupTime: orderData.pickupTime,
+          garmentCount: orderData.garmentCount,
+          garmentTypes: orderData.garmentTypes,
+          specialInstructions: orderData.specialInstructions
+        })
+      })
+      .then(r => r.json())
+      .then(d => console.log('Confirmation email:', d.message))
+      .catch(err => console.error('Email API error:', err));
 
       // Populate & open success dialog
       if (confOrderId)  confOrderId.textContent = orderId;
