@@ -559,6 +559,7 @@ if (isDashboardPage) {
                 <a href="track.html?id=${order.id}" style="color:var(--primary); font-family:var(--font-heading); font-weight:700; text-decoration:underline;">
                   ${order.id}
                 </a>
+                ${order.paymentMethod ? `<div style="font-size:0.7rem; font-weight:600; color:var(--text-muted); margin-top:0.15rem;">💵 ${order.paymentMethod === 'COD' ? 'COD' : 'Online'}</div>` : ''}
               </td>
               <td>
                 <div>${order.pickupDate}</div>

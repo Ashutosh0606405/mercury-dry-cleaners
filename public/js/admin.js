@@ -337,9 +337,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Schedule info
+    // Schedule info
     const scheduleHTML = item.pickupDate 
-      ? `<p style="font-size:0.9rem; margin-top:0.25rem;">📅 Date: <strong>${item.pickupDate}</strong> | ⏱ Slot: <strong>${item.pickupTime}</strong></p>`
+      ? `<p style="font-size:0.9rem; margin-top:0.25rem;"><span>📅 Date: <strong>${item.pickupDate}</strong></span><br><span>⏱ Slot: <strong>${item.pickupTime}</strong></span></p>`
       : `<p style="font-size:0.9rem; margin-top:0.25rem; color:var(--text-muted);">Immediate Store Drop-off/Pickup</p>`;
+
+    // Payment Method Info
+    const paymentHTML = item.paymentMethod 
+      ? `<p style="font-size:0.9rem; margin-top:0.5rem; color: var(--primary);">💵 Payment: <strong>${item.paymentMethod === 'COD' ? 'Cash on Delivery (COD)' : 'Pay Online / UPI'}</strong></p>`
+      : '';
 
     // Customer Address
     const addressHTML = item.address
@@ -364,8 +370,9 @@ document.addEventListener('DOMContentLoaded', () => {
           ${item.email ? `<p style="font-size: 0.85rem; color: var(--text-muted);">✉ ${item.email}</p>` : ''}
         </div>
         <div>
-          <h4 style="font-family: var(--font-heading); font-size: 0.95rem; color: var(--text-dark); margin: 0;">Schedule Details</h4>
+          <h4 style="font-family: var(--font-heading); font-size: 0.95rem; color: var(--text-dark); margin: 0;">Schedule & Payment</h4>
           ${scheduleHTML}
+          ${paymentHTML}
         </div>
       </div>
 

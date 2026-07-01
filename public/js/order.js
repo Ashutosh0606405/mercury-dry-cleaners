@@ -150,6 +150,25 @@ function setupForm() {
   const dialogId  = document.getElementById('dialogOrderId');
   const dialogTot = document.getElementById('dialogTotal');
 
+  // Toggle active payment option styling
+  const payOptions = document.querySelectorAll('#payment-options input[name="paymentMethod"]');
+  payOptions.forEach(opt => {
+    opt.addEventListener('change', () => {
+      payOptions.forEach(o => {
+        const lbl = o.closest('label');
+        if (o.checked) {
+          lbl.style.borderColor = 'var(--primary)';
+          lbl.style.background = 'var(--primary-light)';
+          lbl.style.fontWeight = '600';
+        } else {
+          lbl.style.borderColor = 'var(--border-color)';
+          lbl.style.background = 'transparent';
+          lbl.style.fontWeight = '500';
+        }
+      });
+    });
+  });
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -175,6 +194,8 @@ function setupForm() {
     let phone = document.getElementById('custPhone').value.trim().replace(/[\s\-]/g, '');
     if (phone.length === 10) phone = '+91' + phone;
 
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'COD';
+
     const orderData = {
       orderId,
       customerName: document.getElementById('custName').value.trim(),
@@ -182,6 +203,7 @@ function setupForm() {
       email:        document.getElementById('custEmail').value.trim(),
       address:      document.getElementById('custAddress').value.trim(),
       notes:        document.getElementById('custNotes').value.trim(),
+      paymentMethod,
       items: selected.map(s => ({
         id:       s.id,
         name:     s.name,

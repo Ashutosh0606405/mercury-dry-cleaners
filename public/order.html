@@ -355,6 +355,21 @@
           <label for="custAddress">Pickup Address</label>
           <textarea id="custAddress" name="address" placeholder="Flat no, street, area, Delhi…" required></textarea>
         </div>
+
+        <div class="form-group">
+          <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Payment Method</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;" id="payment-options">
+            <label style="display:flex; align-items:center; gap:0.5rem; border:1.5px solid var(--primary); padding:0.75rem 1rem; border-radius:8px; cursor:pointer; background:var(--primary-light); font-weight:600; font-size:0.9rem;">
+              <input type="radio" name="paymentMethod" value="COD" checked style="accent-color:var(--primary);">
+              💵 Cash on Delivery (COD)
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; border:1.5px solid var(--border-color); padding:0.75rem 1rem; border-radius:8px; cursor:pointer; font-weight:500; font-size:0.9rem; transition:all 0.2s;">
+              <input type="radio" name="paymentMethod" value="UPI/Online" style="accent-color:var(--primary);">
+              📱 Pay Online / UPI
+            </label>
+          </div>
+        </div>
+
         <div class="form-group">
           <label for="custNotes">Special Instructions (optional)</label>
           <textarea id="custNotes" name="notes" placeholder="E.g. Handle the saree carefully…"></textarea>
