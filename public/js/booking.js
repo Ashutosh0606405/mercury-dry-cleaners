@@ -1,35 +1,48 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { firebaseConfig } from "./firebase-config.js";
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+/** Generate a short human-readable order ID, e.g. MDC-20240701-A3F2 */
+function generateOrderId() {
+  const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const randPart = Math.random().toString(36).toUpperCase().slice(2, 6);
+  return `MDC-${datePart}-${randPart}`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  const pickupForm = document.getElementById('pickup-form');
-  const pickupDateInput = document.getElementById('pickup-date');
-  const submitBtn = document.getElementById('submit-btn');
-  const confDialog = document.getElementById('confirmation-dialog');
-  const confOrderId = document.getElementById('conf-order-id');
-  const confDate = document.getElementById('conf-date');
-  const confTime = document.getElementById('conf-time');
+  const pickupForm   = document.getElementById('pickup-form');
+  const submitBtn    = document.getElementById('submit-btn');
+  const confDialog   = document.getElementById('confirmation-dialog');
+  const confOrderId  = document.getElementById('conf-order-id');
+  const confDate     = document.getElementById('conf-date');
+  const confTime     = document.getElementById('conf-time');
   const trackOrderLink = document.getElementById('track-order-link');
   const closeDialogBtn = document.getElementById('close-dialog-btn');
 
-  // Set min date of pickup to tomorrow
-  const pickupDate = document.getElementById('pickupDate');
-  if (pickupDate) {
+  // ── Set min date of pickup to tomorrow ────────────────────────────────────
+  const pickupDateInput = document.getElementById('pickupDate');
+  if (pickupDateInput) {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toISOString().split('T')[0];
-    pickupDate.setAttribute('min', tomorrowStr);
-    pickupDate.value = tomorrowStr;
+    pickupDateInput.setAttribute('min', tomorrowStr);
+    pickupDateInput.value = tomorrowStr;
   }
 
-  // Manage field validation styles and sync aria-invalid (per retrieved guidelines)
+  // ── Inline validation styling ──────────────────────────────────────────────
   const inputs = pickupForm.querySelectorAll('input, select, textarea');
   inputs.forEach(input => {
-    // Check validation on blur
     input.addEventListener('blur', () => {
-      // Sync aria-invalid with the :user-invalid state
-      const isUserInvalid = input.matches(':user-invalid');
-      input.setAttribute('aria-invalid', isUserInvalid ? 'true' : 'false');
+      input.setAttribute('aria-invalid', input.matches(':user-invalid') ? 'true' : 'false');
     });
-
-    // Clear error style immediately as user corrects input
     input.addEventListener('input', () => {
       if (input.hasAttribute('aria-invalid') && input.checkValidity()) {
         input.removeAttribute('aria-invalid');
@@ -37,18 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Submit Handler
+  // ── Submit Handler ─────────────────────────────────────────────────────────
   pickupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Trigger validation styling across all fields
+    // Validate all fields first
     let firstInvalid = null;
     inputs.forEach(input => {
-      // Forces browser validation to trigger immediately
-      const isValid = input.checkValidity();
-      if (!isValid) {
+      if (!input.checkValidity()) {
         input.setAttribute('aria-invalid', 'true');
-        // Standard user-invalid polyfill backup trigger if browser doesn't support
         input.classList.add('user-invalid-fallback');
         if (!firstInvalid) firstInvalid = input;
       } else {
@@ -62,86 +72,73 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Get checked garment types
+    // Collect garment types
     const garmentTypes = [];
     document.querySelectorAll('input[name="garmentTypes"]:checked').forEach(cb => {
       garmentTypes.push(cb.value);
     });
+    if (garmentTypes.length === 0) garmentTypes.push('General Garments');
 
-    if (garmentTypes.length === 0) {
-      // If none selected, default to a generic "Garments" array
-      garmentTypes.push('General Garments');
-    }
-
-    let phoneVal = document.getElementById('phone').value.trim().replace(/[\s-]/g, '');
+    // Normalise phone to +91XXXXXXXXXX
+    let phoneVal = document.getElementById('phone').value.trim().replace(/[\s\-]/g, '');
     if (phoneVal.length === 10 && !phoneVal.startsWith('+')) {
       phoneVal = '+91' + phoneVal;
     } else if (phoneVal.length === 12 && phoneVal.startsWith('91')) {
       phoneVal = '+' + phoneVal;
     }
 
-    const formData = {
-      customerName: document.getElementById('customerName').value,
-      phone: phoneVal,
-      email: document.getElementById('email').value,
-      pickupDate: document.getElementById('pickupDate').value,
-      pickupTime: document.getElementById('pickupTime').value,
-      garmentCount: document.getElementById('garmentCount').value,
-      garmentTypes: garmentTypes,
-      specialInstructions: document.getElementById('specialInstructions').value
+    const orderId = generateOrderId();
+
+    const orderData = {
+      orderId,
+      customerName:        document.getElementById('customerName').value.trim(),
+      phone:               phoneVal,
+      email:               document.getElementById('email').value.trim(),
+      pickupDate:          document.getElementById('pickupDate').value,
+      pickupTime:          document.getElementById('pickupTime').value,
+      garmentCount:        Number(document.getElementById('garmentCount').value),
+      garmentTypes,
+      specialInstructions: document.getElementById('specialInstructions').value.trim(),
+      status:              'pending',
+      createdAt:           serverTimestamp()
     };
 
-    // Show loading state
+    // Loading state
     const originalBtnText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Scheduling Pickup...';
+    submitBtn.disabled    = true;
+    submitBtn.textContent = 'Scheduling Pickup…';
 
     try {
-      const response = await fetch('/api/orders/pickup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
+      // ── Save directly to Firestore (no backend needed) ──────────────────
+      await addDoc(collection(db, 'pickups'), orderData);
 
-      const data = await response.json();
+      // Populate & open success dialog
+      if (confOrderId)  confOrderId.textContent = orderId;
+      if (confDate)     confDate.textContent     = orderData.pickupDate;
+      if (confTime)     confTime.textContent     = orderData.pickupTime;
+      if (trackOrderLink) trackOrderLink.href    = `track.html?id=${orderId}`;
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Server error occurred.');
-      }
-
-      // Populate success dialog
-      confOrderId.textContent = data.order.id;
-      confDate.textContent = data.order.pickupDate;
-      confTime.textContent = data.order.pickupTime;
-      trackOrderLink.href = `track.html?id=${data.order.id}`;
-
-      // Open modal dialog natively
       confDialog.showModal();
 
       // Reset form
       pickupForm.reset();
-      // Reset pickup date to tomorrow
-      if (pickupDate) {
+      if (pickupDateInput) {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
-        pickupDate.value = tomorrow.toISOString().split('T')[0];
+        pickupDateInput.value = tomorrow.toISOString().split('T')[0];
       }
 
     } catch (err) {
-      console.error(err);
+      console.error('Booking error:', err);
       alert(`Booking Failed: ${err.message}`);
     } finally {
-      submitBtn.disabled = false;
+      submitBtn.disabled    = false;
       submitBtn.textContent = originalBtnText;
     }
   });
 
-  // Close Dialog handler
+  // ── Close dialog ───────────────────────────────────────────────────────────
   if (closeDialogBtn) {
-    closeDialogBtn.addEventListener('click', () => {
-      confDialog.close();
-    });
+    closeDialogBtn.addEventListener('click', () => confDialog.close());
   }
 });
