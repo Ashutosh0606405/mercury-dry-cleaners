@@ -4,35 +4,35 @@
    DESIGN TOKENS — LIGHT THEME
 =========================== */
 :root {
-  --white: #ffffff;
-  --bg-hero: #ddeeff;
-  --bg-body: #f7faff;
-  --bg-section: #ffffff;
-  --bg-alt: #eef4fb;
+  --white: #faf9f6;         /* Soft warm off-white (linen/cotton feel) */
+  --bg-hero: #e6e0d4;       /* Matte warm sand/cloth background */
+  --bg-body: #f2eee3;       /* Canvas/linen warm gray-beige background */
+  --bg-section: #faf9f6;    /* Warm cotton white */
+  --bg-alt: #e8e2d4;        /* Soft sand/khaki linen */
 
-  --primary: #f97316;       /* Orange */
-  --primary-hover: #ea6c0a;
-  --primary-light: #fff7ed;
+  --primary: #354f6c;       /* Washed Denim Navy (soft, matte, organic) */
+  --primary-hover: #23374d; /* Darker denim */
+  --primary-light: #eef3f7; /* Very soft cotton blue-gray */
 
-  --blue: #1e40af;          /* Dark blue for text */
-  --blue-mid: #2563eb;
-  --blue-light: #dbeafe;
+  --blue: #23374d;          
+  --blue-mid: #354f6c;
+  --blue-light: #eef3f7;
 
-  --text-dark: #1a2744;
-  --text-mid: #374151;
-  --text-muted: #6b7280;
-  --text-light: #9ca3af;
+  --text-dark: #222b3c;     /* Soft black with a touch of navy */
+  --text-mid: #4a5465;      /* Slate gray */
+  --text-muted: #748094;
+  --text-light: #9faab9;
 
-  --green: #25d366;
-  --green-light: #dcfce7;
+  --green: #2e7d32;         /* Matte forest green */
+  --green-light: #edf7ed;
 
-  --border: #e5e7eb;
-  --border-focus: #f97316;
+  --border: #d4ccbf;        /* Matte flax/flannel border */
+  --border-focus: #354f6c;
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.1);
-  --shadow-orange: 0 6px 20px rgba(249,115,22,0.3);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --shadow-orange: 0 6px 20px rgba(53, 79, 108, 0.25);
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -50,7 +50,17 @@
 =========================== */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
 html { scroll-behavior: smooth; }
-body { background: var(--bg-body); color: var(--text-dark); font-family: var(--font-body); line-height:1.6; overflow-x:hidden; }
+body { 
+  background: var(--bg-body); 
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.015) 1px, transparent 1px), 
+    linear-gradient(90deg, rgba(0,0,0,0.015) 1px, transparent 1px);
+  background-size: 8px 8px;
+  color: var(--text-dark); 
+  font-family: var(--font-body); 
+  line-height:1.6; 
+  overflow-x:hidden; 
+}
 h1,h2,h3,h4 { font-family: var(--font-heading); font-weight:700; }
 a { color:inherit; text-decoration:none; }
 img { max-width:100%; display:block; }
@@ -245,7 +255,7 @@ img { max-width:100%; display:block; }
   transition:var(--transition);
   box-shadow: var(--shadow-orange);
 }
-.btn-book:hover { background:var(--primary-hover); transform:translateY(-2px); box-shadow:0 8px 24px rgba(249,115,22,0.4); }
+.btn-book:hover { background:var(--primary-hover); transform:translateY(-2px); box-shadow:0 8px 24px rgba(53,79,108,0.3); }
 
 .btn-whatsapp {
   display:inline-flex; align-items:center; gap:0.5rem;
@@ -503,7 +513,7 @@ input[type="text"], input[type="email"], input[type="tel"], input[type="date"], 
 input:focus, select:focus, textarea:focus {
   outline:none; border-color:var(--primary);
   background:var(--primary-light);
-  box-shadow:0 0 0 3px rgba(249,115,22,0.1);
+  box-shadow:0 0 0 3px rgba(53,79,108,0.1);
 }
 input::placeholder, textarea::placeholder { color:var(--text-light); }
 select option { background:white; color:var(--text-dark); }
@@ -696,7 +706,7 @@ tr:last-child td { border-bottom:none; }
    ========================================================================== */
 
 :root {
-  --primary-glow: rgba(249, 115, 22, 0.08);
+  --primary-glow: rgba(53, 79, 108, 0.08);
   --error-glow: rgba(239, 68, 68, 0.08);
   --warning: #f59e0b;
   --success: #10b981;
@@ -709,7 +719,7 @@ tr:last-child td { border-bottom:none; }
   left: -10%;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(249,115,22,0.06) 0%, rgba(249,115,22,0) 70%);
+  background: radial-gradient(circle, rgba(53,79,108,0.06) 0%, rgba(53,79,108,0) 70%);
   z-index: -1;
   pointer-events: none;
 }
@@ -719,7 +729,7 @@ tr:last-child td { border-bottom:none; }
   right: -10%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(30,64,175,0.04) 0%, rgba(30,64,175,0) 70%);
+  background: radial-gradient(circle, rgba(53,79,108,0.04) 0%, rgba(53,79,108,0) 70%);
   z-index: -1;
   pointer-events: none;
 }
@@ -727,7 +737,7 @@ tr:last-child td { border-bottom:none; }
 /* Professional Cards / Panels */
 .glass-panel {
   background: var(--white);
-  border: 1.5px solid var(--border);
+  border: 1.5px dashed var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   padding: 1.5rem;
@@ -738,7 +748,7 @@ tr:last-child td { border-bottom:none; }
 .glass-panel:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
-  border-color: rgba(249, 115, 22, 0.3);
+  border-color: rgba(53, 79, 108, 0.3);
 }
 
 /* Stats Counter Color Branding */
@@ -772,7 +782,7 @@ tr:last-child td { border-bottom:none; }
 }
 .admin-search input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(249,115,22,0.1);
+  box-shadow: 0 0 0 3px rgba(53,79,108,0.1);
   outline: none;
 }
 
@@ -792,7 +802,7 @@ tr:last-child td { border-bottom:none; }
 }
 .admin-select-status:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  box-shadow: 0 0 0 3px rgba(53, 79, 108, 0.1);
 }
 
 /* Table Design Enhancements */
@@ -855,5 +865,19 @@ tr:last-child td { border-bottom:none; }
   color: var(--white);
   border-color: #ef4444;
   transform: translateY(-1px);
+}
+
+/* Customer Grid Layout */
+.customer-grid {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 992px) {
+  .customer-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
 }
 
