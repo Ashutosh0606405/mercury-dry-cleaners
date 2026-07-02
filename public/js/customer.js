@@ -563,6 +563,39 @@ if (isDashboardPage) {
               break;
           }
 
+          // Format Date & Time beautifully
+          let displayDate = order.pickupDate || '';
+          let displayTime = order.pickupTime || '';
+          if (!displayDate && order.createdAt) {
+            try {
+              const dateObj = order.createdAt.toDate ? order.createdAt.toDate() : new Date(order.createdAt);
+              if (!isNaN(dateObj.getTime())) {
+                displayDate = dateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                displayTime = dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+              }
+            } catch (e) {
+              console.error("Error formatting date:", e);
+            }
+          }
+          if (!displayDate) displayDate = '—';
+          if (!displayTime) displayTime = '';
+
+          // Format garment types list
+          let displayTypes = 'General';
+          if (order.garmentTypes && Array.isArray(order.garmentTypes)) {
+            displayTypes = order.garmentTypes.join(', ');
+          } else if (order.items && Array.isArray(order.items)) {
+            displayTypes = order.items.map(i => `${i.qty}x ${i.name}`).join(', ');
+          }
+
+          // Format total items count
+          let displayCount = 0;
+          if (order.garmentCount !== undefined) {
+            displayCount = order.garmentCount;
+          } else if (order.items && Array.isArray(order.items)) {
+            displayCount = order.items.reduce((sum, i) => sum + Number(i.qty || 0), 0);
+          }
+
           return `
             <tr>
               <td>
@@ -572,12 +605,12 @@ if (isDashboardPage) {
                 ${order.paymentMethod ? `<div style="font-size:0.7rem; font-weight:600; color:var(--text-muted); margin-top:0.15rem;">💵 ${order.paymentMethod === 'COD' ? 'COD' : 'Online'}</div>` : ''}
               </td>
               <td>
-                <div>${order.pickupDate}</div>
-                <div style="font-size:0.75rem; color:var(--text-muted);">⏱ ${order.pickupTime}</div>
+                <div>${displayDate}</div>
+                ${displayTime ? `<div style="font-size:0.75rem; color:var(--text-muted);">⏱ ${displayTime}</div>` : ''}
               </td>
-              <td>${order.garmentCount} items</td>
+              <td>${displayCount} items</td>
               <td>
-                <span style="font-size:0.85rem; font-weight:500;">${order.garmentTypes.join(', ')}</span>
+                <span style="font-size:0.85rem; font-weight:500;">${displayTypes}</span>
               </td>
               <td>
                 <span class="badge ${badgeClass}">${badgeLabel}</span>
