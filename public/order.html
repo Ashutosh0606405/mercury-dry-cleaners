@@ -334,8 +334,20 @@
         <span class="total-amount" id="totalAmount">₹0</span>
       </div>
 
+      <!-- Authentication prompt (shown when logged out) -->
+      <div id="checkout-auth-prompt" class="glass-panel" style="display: none; text-align: center; padding: 3rem 2rem; border-color: rgba(249, 115, 22, 0.2); margin-top: 1.5rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+        <h3 style="font-family: var(--font-heading); margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 700;">Sign In Required</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 400px; margin: 0 auto 1.5rem auto; line-height: 1.5;">
+          Please sign in or register a new customer account to place and track your orders.
+        </p>
+        <a href="customer-login.html?redirect=order.html" class="btn-primary" style="display: inline-flex; text-decoration: none; padding: 0.75rem 2rem; border-radius: 9999px;">
+          Sign In / Register →
+        </a>
+      </div>
+
       <!-- Customer details -->
-      <form class="customer-form" id="orderForm" novalidate>
+      <form class="customer-form" id="orderForm" style="display: none;" novalidate>
         <div class="notice-bar">
           ℹ️ We'll confirm your order within 30 minutes and arrange pickup.
         </div>

@@ -27,6 +27,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+function redirectAfterAuth() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectPage = urlParams.get('redirect') || 'customer.html';
+  window.location.href = redirectPage;
+}
+
 // DOM Elements
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
@@ -131,7 +137,7 @@ if (isLoginPage) {
         });
       }
 
-      window.location.href = 'customer.html';
+      redirectAfterAuth();
 
     } catch (err) {
       console.error(err);
@@ -245,7 +251,7 @@ if (isLoginPage) {
         });
       }
 
-      window.location.href = 'customer.html';
+      redirectAfterAuth();
 
     } catch (err) {
       console.error(err);
@@ -297,7 +303,7 @@ if (isLoginPage) {
 
     try {
       await signInWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
-      window.location.href = 'customer.html';
+      redirectAfterAuth();
     } catch (err) {
       console.error(err);
       if (errorText) {
@@ -384,7 +390,7 @@ if (isLoginPage) {
         createdAt: new Date().toISOString()
       });
 
-      window.location.href = 'customer.html';
+      redirectAfterAuth();
 
     } catch (err) {
       console.error(err);
@@ -444,49 +450,49 @@ if (isDashboardPage) {
       profEmail.textContent = email;
       profPhone.textContent = phone;
 
-      // 2. Fetch Customer Orders: Query by email or phone depending on auth method
-      // 2. Fetch Customer Orders: Query by email or phone across both collections
+      // 2. Fetch Customer Orders: Query across both collections using user.uid and/or user.email/user.phoneNumber
       const ordersCol = collection(db, "orders");
       const pickupsCol = collection(db, "pickups");
       
-      let qOrders, qPickups;
-      if (user.email) {
-        qOrders = query(ordersCol, where("email", "==", user.email));
-        qPickups = query(pickupsCol, where("email", "==", user.email));
-      } else {
-        qOrders = query(ordersCol);
-        qPickups = query(pickupsCol);
-      }
-      
-      const [ordersSnap, pickupsSnap] = await Promise.all([
-        getDocs(qOrders),
-        getDocs(qPickups)
-      ]);
-      
-      let orders = [];
-      ordersSnap.forEach(doc => {
-        const data = doc.data();
-        const idVal = data.orderId || data.id || doc.id;
-        orders.push({
-          id: idVal,
-          orderId: idVal,
-          collectionType: 'orders',
-          ...data
-        });
-      });
-      pickupsSnap.forEach(doc => {
-        const data = doc.data();
-        const idVal = data.orderId || data.id || doc.id;
-        orders.push({
-          id: idVal,
-          orderId: idVal,
-          collectionType: 'pickups',
-          ...data
-        });
-      });
+      const queries = [
+        getDocs(query(ordersCol, where("userId", "==", user.uid))),
+        getDocs(query(pickupsCol, where("userId", "==", user.uid)))
+      ];
 
-      // Filter phone users locally (Firestore where limitations)
-      if (!user.email) {
+      // Query by email if available to fetch legacy or matching orders
+      if (user.email) {
+        queries.push(getDocs(query(ordersCol, where("email", "==", user.email))));
+        queries.push(getDocs(query(pickupsCol, where("email", "==", user.email))));
+      }
+
+      const queryResults = await Promise.all(queries);
+      const uniqueOrders = new Map();
+
+      const parseAndAdd = (snap, collType) => {
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const idVal = data.orderId || data.id || docSnap.id;
+          uniqueOrders.set(idVal, {
+            id: idVal,
+            orderId: idVal,
+            collectionType: collType,
+            ...data
+          });
+        });
+      };
+
+      parseAndAdd(queryResults[0], 'orders');
+      parseAndAdd(queryResults[1], 'pickups');
+
+      if (user.email && queryResults.length > 2) {
+        parseAndAdd(queryResults[2], 'orders');
+        parseAndAdd(queryResults[3], 'pickups');
+      }
+
+      let orders = Array.from(uniqueOrders.values());
+
+      // Filter phone users locally (if not email authenticated)
+      if (!user.email && user.phoneNumber) {
         const cleanPhone = user.phoneNumber.replace(/[^0-9]/g, '');
         orders = orders.filter(o => (o.phone || '').replace(/[^0-9]/g, '').includes(cleanPhone));
       }

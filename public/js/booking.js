@@ -1,14 +1,21 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import {
   getFirestore,
   collection,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
+const auth = getAuth(app);
 
 /** Generate a short human-readable order ID, e.g. MDC-20240701-A3F2 */
 function generateOrderId() {
@@ -26,6 +33,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const confTime     = document.getElementById('conf-time');
   const trackOrderLink = document.getElementById('track-order-link');
   const closeDialogBtn = document.getElementById('close-dialog-btn');
+
+  // Handle Auth State and prefill
+  onAuthStateChanged(auth, async (user) => {
+    const bookingForm = document.getElementById('pickup-form');
+    const authPrompt = document.getElementById('booking-auth-prompt');
+
+    if (user) {
+      if (bookingForm) bookingForm.style.display = 'block';
+      if (authPrompt) authPrompt.style.display = 'none';
+
+      // Autofill user details from Firestore
+      try {
+        const userDocSnap = await getDoc(doc(db, "users", user.uid));
+        if (userDocSnap.exists()) {
+          const profile = userDocSnap.data();
+          const nameInput = document.getElementById('customerName');
+          const emailInput = document.getElementById('email');
+          const phoneInput = document.getElementById('phone');
+
+          if (nameInput && !nameInput.value.trim()) nameInput.value = profile.name || '';
+          if (emailInput && !emailInput.value.trim()) emailInput.value = profile.email || '';
+          if (phoneInput && (!phoneInput.value.trim() || phoneInput.value.trim() === '+91')) {
+            let ph = profile.phone || '';
+            if (ph.startsWith('+91')) {
+              phoneInput.value = ph.replace('+91', '').trim();
+            } else {
+              phoneInput.value = ph.trim();
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error auto-filling profile:", err);
+      }
+    } else {
+      if (bookingForm) bookingForm.style.display = 'none';
+      if (authPrompt) authPrompt.style.display = 'block';
+    }
+  });
 
   // ── Set min date of pickup to tomorrow ────────────────────────────────────
   const pickupDateInput = document.getElementById('pickupDate');
@@ -91,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const orderData = {
       orderId,
+      userId:              auth.currentUser ? auth.currentUser.uid : null,
       customerName:        document.getElementById('customerName').value.trim(),
       phone:               phoneVal,
       email:               document.getElementById('email').value.trim(),

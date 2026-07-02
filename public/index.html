@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mercury Dry Cleaners | India's #1 Laundry & Dry Cleaning Service</title>
-  <meta name="description" content="India's most trusted premium dry cleaning & laundry service. Free doorstep pickup, real-time tracking, eco-friendly. Book your pickup today.">
+  <title>Mercury Dry Cleaners | Laundry & Dry Cleaning Service</title>
+  <meta name="description" content="Premium dry cleaning & laundry service in Delhi. Free doorstep pickup, real-time tracking, eco-friendly. Book your pickup today.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
@@ -72,14 +72,14 @@
 
       <!-- Headline -->
       <h1 class="hero-title">
-        India's #1 Rated<br>
+        Premium<br>
         <span class="title-blue">Laundry &amp; Dry Cleaning</span><br>
         Service
       </h1>
 
       <!-- City Typing -->
       <p class="hero-city">
-        Now Serving in <strong id="city-display" class="typed-city">Mumbai</strong><span class="cursor">|</span>
+        Now Serving in <strong style="color:var(--primary)">Delhi</strong>
       </p>
 
       <!-- CTAs -->
@@ -276,7 +276,7 @@
           <div class="author-av">RS</div>
           <div>
             <strong>Rahul Sharma</strong>
-            <small>Mumbai</small>
+            <small>Delhi</small>
           </div>
         </div>
       </div>
@@ -287,7 +287,7 @@
           <div class="author-av">AJ</div>
           <div>
             <strong>Ankit Joshi</strong>
-            <small>Bangalore</small>
+            <small>Delhi</small>
           </div>
         </div>
       </div>
@@ -315,7 +315,19 @@
       </div>
 
       <div class="booking-form-wrap reveal delay-2">
-        <form id="pickup-form" novalidate>
+        <!-- Authentication Prompt for Booking -->
+        <div id="booking-auth-prompt" class="glass-panel" style="display: none; text-align: center; padding: 3rem 2rem; border-color: rgba(249, 115, 22, 0.2);">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+          <h3 style="font-family: var(--font-heading); margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 700;">Sign In Required</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+            Please sign in or register to schedule your free laundry pickup window.
+          </p>
+          <a href="customer-login.html?redirect=index.html%23schedule" class="btn-primary" style="display: inline-flex; text-decoration: none; padding: 0.75rem 2rem; border-radius: 9999px; justify-content: center;">
+            Sign In / Register →
+          </a>
+        </div>
+
+        <form id="pickup-form" style="display: none;" novalidate>
           <h3 class="form-title">📅 Book Your Free Pickup</h3>
           <div class="form-row">
             <div class="form-group">

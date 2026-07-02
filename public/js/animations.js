@@ -50,27 +50,7 @@ const cntObs = new IntersectionObserver((entries) => {
 document.querySelectorAll('.count[data-target]').forEach(el => cntObs.observe(el));
 
 // ===== CITY TYPING ANIMATION =====
-const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Chennai', 'Kolkata', 'Jaipur'];
-const cityEl = document.getElementById('city-display');
-if (cityEl) {
-  let ci = 0, charI = 0, deleting = false;
-  const typeSpeed = 90, deleteSpeed = 50, pauseTime = 1800;
-
-  function typeCity() {
-    const word = cities[ci];
-    if (!deleting) {
-      cityEl.textContent = word.substring(0, charI + 1);
-      charI++;
-      if (charI === word.length) { deleting = true; setTimeout(typeCity, pauseTime); return; }
-    } else {
-      cityEl.textContent = word.substring(0, charI - 1);
-      charI--;
-      if (charI === 0) { deleting = false; ci = (ci + 1) % cities.length; }
-    }
-    setTimeout(typeCity, deleting ? deleteSpeed : typeSpeed);
-  }
-  typeCity();
-}
+// Serving Delhi statically now
 
 // ===== SMOOTH ANCHOR SCROLL =====
 document.querySelectorAll('a[href^="#"]').forEach(a => {

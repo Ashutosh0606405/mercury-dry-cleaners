@@ -10,7 +10,8 @@ import {
   serverTimestamp,
   getDocs,
   doc,
-  setDoc
+  setDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -18,12 +19,50 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 const auth = getAuth(app);
 
-// Update Auth Button State
-onAuthStateChanged(auth, (user) => {
+// Update Auth State & Checkout Access
+onAuthStateChanged(auth, async (user) => {
   const btn = document.getElementById('auth-nav-btn');
-  if (user && btn) {
-    btn.textContent = 'My Account';
-    btn.href = 'customer.html';
+  const orderForm = document.getElementById('orderForm');
+  const authPrompt = document.getElementById('checkout-auth-prompt');
+
+  if (user) {
+    if (btn) {
+      btn.textContent = 'My Account';
+      btn.href = 'customer.html';
+    }
+    if (orderForm) orderForm.style.display = 'block';
+    if (authPrompt) authPrompt.style.display = 'none';
+
+    // Autofill user details from Firestore
+    try {
+      const userDocSnap = await getDoc(doc(db, "users", user.uid));
+      if (userDocSnap.exists()) {
+        const profile = userDocSnap.data();
+        const nameInput = document.getElementById('custName');
+        const emailInput = document.getElementById('custEmail');
+        const phoneInput = document.getElementById('custPhone');
+
+        if (nameInput && !nameInput.value.trim()) nameInput.value = profile.name || '';
+        if (emailInput && !emailInput.value.trim()) emailInput.value = profile.email || '';
+        if (phoneInput && (!phoneInput.value.trim() || phoneInput.value.trim() === '+91')) {
+          let ph = profile.phone || '';
+          if (ph.startsWith('+91')) {
+            phoneInput.value = ph.replace('+91', '').trim();
+          } else {
+            phoneInput.value = ph.trim();
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error auto-filling profile:", err);
+    }
+  } else {
+    if (btn) {
+      btn.textContent = 'Sign In';
+      btn.href = 'customer-login.html';
+    }
+    if (orderForm) orderForm.style.display = 'none';
+    if (authPrompt) authPrompt.style.display = 'block';
   }
 });
 
@@ -179,6 +218,7 @@ function setupForm() {
 
     const orderData = {
       orderId,
+      userId:       auth.currentUser ? auth.currentUser.uid : null,
       customerName: document.getElementById('custName').value.trim(),
       phone,
       email:        document.getElementById('custEmail').value.trim(),
