@@ -450,52 +450,56 @@ if (isDashboardPage) {
       profEmail.textContent = email;
       profPhone.textContent = phone;
 
-      // 2. Fetch Customer Orders: Query across both collections using user.uid and/or user.email/user.phoneNumber
+      // 2. Fetch Customer Orders: Query across both collections using user.uid, email, and phone number variants
       const ordersCol = collection(db, "orders");
       const pickupsCol = collection(db, "pickups");
-      
-      const queries = [
-        getDocs(query(ordersCol, where("userId", "==", user.uid))),
-        getDocs(query(pickupsCol, where("userId", "==", user.uid)))
-      ];
-
-      // Query by email if available to fetch legacy or matching orders
-      if (user.email) {
-        queries.push(getDocs(query(ordersCol, where("email", "==", user.email))));
-        queries.push(getDocs(query(pickupsCol, where("email", "==", user.email))));
-      }
-
-      const queryResults = await Promise.all(queries);
       const uniqueOrders = new Map();
 
-      const parseAndAdd = (snap, collType) => {
-        snap.forEach(docSnap => {
-          const data = docSnap.data();
-          const idVal = data.orderId || data.id || docSnap.id;
-          uniqueOrders.set(idVal, {
-            id: idVal,
-            orderId: idVal,
-            collectionType: collType,
-            ...data
+      const runQueryAndAdd = async (q, type) => {
+        try {
+          const snap = await getDocs(q);
+          snap.forEach(docSnap => {
+            const data = docSnap.data();
+            const idVal = data.orderId || data.id || docSnap.id;
+            uniqueOrders.set(idVal, {
+              id: idVal,
+              orderId: idVal,
+              collectionType: type,
+              ...data
+            });
           });
-        });
+        } catch (err) {
+          console.error("Error executing order query:", err);
+        }
       };
 
-      parseAndAdd(queryResults[0], 'orders');
-      parseAndAdd(queryResults[1], 'pickups');
+      const promises = [
+        runQueryAndAdd(query(ordersCol, where("userId", "==", user.uid)), 'orders'),
+        runQueryAndAdd(query(pickupsCol, where("userId", "==", user.uid)), 'pickups')
+      ];
 
-      if (user.email && queryResults.length > 2) {
-        parseAndAdd(queryResults[2], 'orders');
-        parseAndAdd(queryResults[3], 'pickups');
+      // Query by profile/auth email if available
+      if (email && email !== '—') {
+        promises.push(runQueryAndAdd(query(ordersCol, where("email", "==", email)), 'orders'));
+        promises.push(runQueryAndAdd(query(pickupsCol, where("email", "==", email)), 'pickups'));
       }
 
+      // Query by profile/auth phone if available
+      if (phone && phone !== '—') {
+        const cleanPh = phone.replace(/[\s\-]/g, '');
+        promises.push(runQueryAndAdd(query(ordersCol, where("phone", "==", cleanPh)), 'orders'));
+        promises.push(runQueryAndAdd(query(pickupsCol, where("phone", "==", cleanPh)), 'pickups'));
+
+        // Fallback to 10-digit format for legacy matches
+        const tenDigit = cleanPh.slice(-10);
+        if (tenDigit && tenDigit.length === 10 && cleanPh !== tenDigit) {
+          promises.push(runQueryAndAdd(query(ordersCol, where("phone", "==", tenDigit)), 'orders'));
+          promises.push(runQueryAndAdd(query(pickupsCol, where("phone", "==", tenDigit)), 'pickups'));
+        }
+      }
+
+      await Promise.all(promises);
       let orders = Array.from(uniqueOrders.values());
-
-      // Filter phone users locally (if not email authenticated)
-      if (!user.email && user.phoneNumber) {
-        const cleanPhone = user.phoneNumber.replace(/[^0-9]/g, '');
-        orders = orders.filter(o => (o.phone || '').replace(/[^0-9]/g, '').includes(cleanPhone));
-      }
 
       // Sort: Scheduled first, then active, then completed (case-insensitive)
       const statusPriority = {

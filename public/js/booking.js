@@ -54,11 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (nameInput && !nameInput.value.trim()) nameInput.value = profile.name || '';
           if (emailInput && !emailInput.value.trim()) emailInput.value = profile.email || '';
-          if (phoneInput && (!phoneInput.value.trim() || phoneInput.value.trim() === '+91')) {
+          if (phoneInput && (!phoneInput.value.trim() || phoneInput.value.trim() === '+91' || phoneInput.value.trim() === '+91 ')) {
             let ph = profile.phone || '';
-            if (ph.startsWith('+91')) {
-              phoneInput.value = ph.replace('+91', '').trim();
-            } else {
+            if (ph) {
+              if (ph.length === 10 && !ph.startsWith('+')) ph = '+91' + ph;
               phoneInput.value = ph.trim();
             }
           }
