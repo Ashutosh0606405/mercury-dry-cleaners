@@ -9,7 +9,8 @@ import {
   addDoc,
   serverTimestamp,
   doc,
-  getDoc
+  getDoc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -156,6 +157,20 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       // ── Save directly to Firestore (no backend needed) ──────────────────
       await addDoc(collection(db, 'pickups'), orderData);
+
+      // ── Auto-update User Profile details if authenticated ──────────────────
+      if (auth.currentUser) {
+        try {
+          const userDocRef = doc(db, "users", auth.currentUser.uid);
+          await updateDoc(userDocRef, {
+            phone: orderData.phone,
+            name: orderData.customerName
+          });
+          console.log("Profile phone/name updated successfully!");
+        } catch (e) {
+          console.error("Failed to auto-update profile:", e);
+        }
+      }
 
       // ── Send Email confirmation via Nodemailer backend ─────────────────
       fetch('/api/email/pickup-confirmation', {

@@ -242,6 +242,20 @@ function setupForm() {
     try {
       await addDoc(collection(db, 'orders'), orderData);
 
+      // ── Auto-update User Profile details if authenticated ──────────────────
+      if (auth.currentUser) {
+        try {
+          const userDocRef = doc(db, "users", auth.currentUser.uid);
+          await setDoc(userDocRef, {
+            phone: orderData.phone,
+            name: orderData.customerName
+          }, { merge: true });
+          console.log("Profile phone/name updated successfully!");
+        } catch (e) {
+          console.error("Failed to auto-update profile:", e);
+        }
+      }
+
       // ── Send Email confirmation via Nodemailer backend ─────────────────
       fetch('/api/email/order-confirmation', {
         method: 'POST',

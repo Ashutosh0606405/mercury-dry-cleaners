@@ -443,12 +443,25 @@ if (isDashboardPage) {
         email = profile.email;
       }
       
-      // Populate Profile Sidebar & Greeting
+      // Populate Profile Sidebar & Greeting with formatted phone
+      let displayPhone = phone;
+      if (displayPhone && displayPhone !== '—') {
+        let cleaned = displayPhone.trim().replace(/[\s\-]/g, '');
+        if (cleaned.length === 10 && !cleaned.startsWith('+')) {
+          displayPhone = '+91 ' + cleaned;
+        } else if (cleaned.length === 12 && cleaned.startsWith('91')) {
+          displayPhone = '+91 ' + cleaned.slice(2);
+        } else if (cleaned.startsWith('+91') && (cleaned.length === 13 || cleaned.length === 14)) {
+          // Keep +91 prefix and format with a space
+          displayPhone = '+91 ' + cleaned.replace('+91', '');
+        }
+      }
+
       custName.textContent = name;
       custWelcomeHeader.textContent = `Hello, ${name.split(' ')[0]}`;
       profName.textContent = name;
       profEmail.textContent = email;
-      profPhone.textContent = phone;
+      profPhone.textContent = displayPhone || '—';
 
       // 2. Fetch Customer Orders: Query across both collections using user.uid, email, and phone number variants
       const ordersCol = collection(db, "orders");
