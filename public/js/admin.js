@@ -213,13 +213,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Trigger customer email notification via Nodemailer backend
         const item = allItems[idx];
-        if (item.email) {
+        if (item.email || item.phone) {
           fetch('/api/email/status-update', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               customerName: item.customerName,
-              email: item.email,
+              email: item.email || '',
+              phone: item.phone || '',
               orderId: item.orderId,
               newStatus: newStatus
             })

@@ -249,6 +249,7 @@ function setupForm() {
         body: JSON.stringify({
           customerName: orderData.customerName,
           email: orderData.email,
+          phone: orderData.phone,
           orderId,
           items: orderData.items,
           totalAmount: total,

@@ -48,6 +48,55 @@ setInterval(() => {
   }
 }, 60 * 60 * 1000); // Clean every hour
 
+// --- TWILIO SMS HELPER ---
+async function sendSMS(to, body) {
+  const sid = process.env.TWILIO_ACCOUNT_SID;
+  const token = process.env.TWILIO_AUTH_TOKEN;
+  const from = process.env.TWILIO_PHONE_NUMBER;
+
+  if (!sid || !token || !from) {
+    console.log('[Twilio SMS] Missing environment variables. Skipping SMS.');
+    return { success: false, reason: 'credentials_missing' };
+  }
+
+  // Ensure to number has country code prefix
+  let formattedTo = to.trim().replace(/[\s\-]/g, '');
+  if (formattedTo.length === 10) {
+    formattedTo = '+91' + formattedTo;
+  }
+
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`;
+  const authHeader = 'Basic ' + Buffer.from(sid + ':' + token).toString('base64');
+
+  try {
+    const params = new URLSearchParams();
+    params.append('To', formattedTo);
+    params.append('From', from);
+    params.append('Body', body);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: params.toString()
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log(`[Twilio SMS] Sent successfully to ${formattedTo}. Message SID: ${data.sid}`);
+      return { success: true, sid: data.sid };
+    } else {
+      console.error(`[Twilio SMS] API Error: ${data.message}`);
+      return { success: false, reason: data.message };
+    }
+  } catch (err) {
+    console.error('[Twilio SMS] Fetch Error:', err);
+    return { success: false, error: err.message };
+  }
+}
+
 // --- API ROUTES ---
 const apiRouter = express.Router();
 
@@ -92,48 +141,75 @@ apiRouter.post('/orders/pickup', async (req, res) => {
   }
 });
 
-// 1b. Send pickup booking confirmation email (Public)
+// 1b. Send pickup booking confirmation email & SMS (Public)
 apiRouter.post('/email/pickup-confirmation', async (req, res) => {
   try {
-    const { customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions } = req.body;
+    const { customerName, email, phone, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions } = req.body;
     if (!email || !orderId) {
       return res.status(400).json({ error: 'Missing required fields: email and orderId.' });
     }
+    
+    // Send Email
     await sendPickupConfirmation({ customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions });
-    res.json({ success: true, message: 'Pickup confirmation email sent.' });
+    
+    // Send SMS (if phone is provided)
+    if (phone) {
+      const smsBody = `Hi ${customerName}, your dry cleaning pickup is scheduled for ${pickupDate} during ${pickupTime}. A rider will arrive to collect your garments. Order ID: ${orderId}. Thanks, Mercury Dry Cleaners!`;
+      await sendSMS(phone, smsBody);
+    }
+    
+    res.json({ success: true, message: 'Pickup confirmation processed.' });
   } catch (err) {
-    console.error('Pickup email error:', err);
-    res.status(500).json({ error: 'Failed to send confirmation email.' });
+    console.error('Pickup notification error:', err);
+    res.status(500).json({ error: 'Failed to process pickup notification.' });
   }
 });
 
-// 1c. Send order confirmation email (Public)
+// 1c. Send order confirmation email & SMS (Public)
 apiRouter.post('/email/order-confirmation', async (req, res) => {
   try {
-    const { customerName, email, orderId, items, totalAmount, address, notes } = req.body;
+    const { customerName, email, phone, orderId, items, totalAmount, address, notes } = req.body;
     if (!email || !orderId) {
       return res.status(400).json({ error: 'Missing required fields: email and orderId.' });
     }
+    
+    // Send Email
     await sendOrderConfirmation({ customerName, email, orderId, items, totalAmount, address, notes });
-    res.json({ success: true, message: 'Order confirmation email sent.' });
+    
+    // Send SMS (if phone is provided)
+    if (phone) {
+      const smsBody = `Hi ${customerName}, your dry cleaning order ${orderId} has been received! Total amount: ₹${totalAmount} (COD). We will update you once it goes into cleaning. Thanks, Mercury Dry Cleaners!`;
+      await sendSMS(phone, smsBody);
+    }
+    
+    res.json({ success: true, message: 'Order confirmation processed.' });
   } catch (err) {
-    console.error('Order email error:', err);
-    res.status(500).json({ error: 'Failed to send confirmation email.' });
+    console.error('Order notification error:', err);
+    res.status(500).json({ error: 'Failed to process order notification.' });
   }
 });
 
-// 1d. Send status update email (Public/Admin)
+// 1d. Send status update email & SMS (Public/Admin)
 apiRouter.post('/email/status-update', async (req, res) => {
   try {
-    const { customerName, email, orderId, newStatus } = req.body;
+    const { customerName, email, phone, orderId, newStatus } = req.body;
     if (!email || !orderId || !newStatus) {
       return res.status(400).json({ error: 'Missing required fields: email, orderId, and newStatus.' });
     }
+    
+    // Send Email
     await sendStatusUpdate({ customerName, email, orderId, newStatus });
-    res.json({ success: true, message: 'Status update email sent.' });
+    
+    // Send SMS (if phone is provided)
+    if (phone) {
+      const smsBody = `Hi ${customerName}, the status of your dry cleaning order ${orderId} has been updated to: ${newStatus.toUpperCase()}. Track your progress here: https://mercury-dry-cleaners.vercel.app/track.html?id=${orderId} . Thanks, Mercury Dry Cleaners!`;
+      await sendSMS(phone, smsBody);
+    }
+    
+    res.json({ success: true, message: 'Status update processed.' });
   } catch (err) {
-    console.error('Status update email error:', err);
-    res.status(500).json({ error: 'Failed to send status update email.' });
+    console.error('Status update notification error:', err);
+    res.status(500).json({ error: 'Failed to process status update notification.' });
   }
 });
 

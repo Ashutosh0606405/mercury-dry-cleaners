@@ -164,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({
           customerName: orderData.customerName,
           email: orderData.email,
+          phone: orderData.phone,
           orderId,
           pickupDate: orderData.pickupDate,
           pickupTime: orderData.pickupTime,
