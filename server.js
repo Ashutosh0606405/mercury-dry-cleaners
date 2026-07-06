@@ -145,12 +145,14 @@ apiRouter.post('/orders/pickup', async (req, res) => {
 apiRouter.post('/email/pickup-confirmation', async (req, res) => {
   try {
     const { customerName, email, phone, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions, pickupFee } = req.body;
-    if (!email || !orderId) {
-      return res.status(400).json({ error: 'Missing required fields: email and orderId.' });
+    if ((!email && !phone) || !orderId) {
+      return res.status(400).json({ error: 'Missing contact info (email/phone) or orderId.' });
     }
     
-    // Send Email
-    await sendPickupConfirmation({ customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions, pickupFee });
+    // Send Email (only if email is provided)
+    if (email) {
+      await sendPickupConfirmation({ customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions, pickupFee });
+    }
     
     // Send SMS (if phone is provided)
     if (phone) {
@@ -176,12 +178,14 @@ apiRouter.post('/email/pickup-confirmation', async (req, res) => {
 apiRouter.post('/email/order-confirmation', async (req, res) => {
   try {
     const { customerName, email, phone, orderId, items, totalAmount, address, notes } = req.body;
-    if (!email || !orderId) {
-      return res.status(400).json({ error: 'Missing required fields: email and orderId.' });
+    if ((!email && !phone) || !orderId) {
+      return res.status(400).json({ error: 'Missing contact info (email/phone) or orderId.' });
     }
     
-    // Send Email
-    await sendOrderConfirmation({ customerName, email, orderId, items, totalAmount, address, notes });
+    // Send Email (only if email is provided)
+    if (email) {
+      await sendOrderConfirmation({ customerName, email, orderId, items, totalAmount, address, notes });
+    }
     
     // Send SMS (if phone is provided)
     if (phone) {
@@ -200,12 +204,14 @@ apiRouter.post('/email/order-confirmation', async (req, res) => {
 apiRouter.post('/email/status-update', async (req, res) => {
   try {
     const { customerName, email, phone, orderId, newStatus } = req.body;
-    if (!email || !orderId || !newStatus) {
-      return res.status(400).json({ error: 'Missing required fields: email, orderId, and newStatus.' });
+    if ((!email && !phone) || !orderId || !newStatus) {
+      return res.status(400).json({ error: 'Missing contact info (email/phone), orderId, or newStatus.' });
     }
     
-    // Send Email
-    await sendStatusUpdate({ customerName, email, orderId, newStatus });
+    // Send Email (only if email is provided)
+    if (email) {
+      await sendStatusUpdate({ customerName, email, orderId, newStatus });
+    }
     
     // Send SMS (if phone is provided)
     if (phone) {
