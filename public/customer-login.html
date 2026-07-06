@@ -11,13 +11,13 @@
   <div class="glow-bg-right"></div>
 
   <!-- Header -->
-  <header>
-    <div class="navbar">
-      <a href="index.html" class="logo">
-        <div class="logo-icon">M</div>
-        Mercury <span>Dry Cleaners</span>
+  <header style="background: var(--primary); padding: 0.5rem 0; box-shadow: var(--shadow-sm); border-bottom: 3px dashed rgba(255, 255, 255, 0.2);">
+    <div class="navbar" style="height: 56px; display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
+      <a href="index.html" class="logo" style="display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: white;">
+        <div class="logo-icon" style="background: white; color: var(--primary); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-heading);">M</div>
+        <div class="logo-text" style="color: white; font-weight: 700; font-size: 1.1rem; font-family: var(--font-heading); line-height: 1.1;">Mercury<span style="color: rgba(255,255,255,0.75); font-size: 0.75rem; font-weight: 600; display: block; letter-spacing: 0.04em;">Dry Cleaners</span></div>
       </a>
-      <a href="index.html" class="btn-secondary">Back to Site</a>
+      <a href="index.html" class="btn-back-site">Back to Site</a>
     </div>
   </header>
 
@@ -26,9 +26,9 @@
     <div class="glass-panel" style="border-radius: 24px;">
       
       <!-- Panel Header Toggle -->
-      <div id="auth-tabs" style="display: flex; background: rgba(15, 23, 42, 0.6); padding: 0.25rem; border-radius: 9999px; margin-bottom: 2rem; border: 1px solid var(--border-color);">
-        <button id="tab-login" class="btn-primary" style="flex: 1; border-radius: 9999px; padding: 0.6rem 0; justify-content: center; font-size: 0.9rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);">Sign In</button>
-        <button id="tab-register" class="btn-secondary" style="flex: 1; border-radius: 9999px; padding: 0.6rem 0; justify-content: center; font-size: 0.9rem; border: none;">Register</button>
+      <div id="auth-tabs" class="auth-tabs-pill">
+        <button id="tab-login" class="auth-tab active">Sign In</button>
+        <button id="tab-register" class="auth-tab">Register</button>
       </div>
 
       <!-- Error Logs -->

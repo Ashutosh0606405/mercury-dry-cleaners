@@ -516,7 +516,7 @@ img { max-width:100%; display:block; }
 .form-group label { font-size:0.78rem; font-weight:600; color:var(--text-mid); text-transform:uppercase; letter-spacing:0.05em; }
 .form-group label small { text-transform:none; font-weight:400; letter-spacing:0; color:var(--text-muted); }
 
-input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="number"], select, textarea {
+input[type="text"], input[type="email"], input[type="tel"], input[type="password"], input[type="date"], input[type="number"], select, textarea {
   width:100%; padding:0.65rem 0.9rem;
   background:var(--bg-body);
   border:1.5px solid var(--border);
@@ -894,5 +894,55 @@ tr:last-child td { border-bottom:none; }
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+}
+
+/* Auth Portal Tab Switcher & Navigation Styles */
+.auth-tabs-pill {
+  display: flex;
+  background: var(--bg-body);
+  padding: 0.3rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 2rem;
+  border: 1.5px dashed var(--border);
+}
+.auth-tab {
+  flex: 1;
+  border-radius: var(--radius-full);
+  padding: 0.65rem 0;
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-mid);
+  transition: var(--transition);
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+.auth-tab:hover {
+  color: var(--primary);
+}
+.auth-tab.active {
+  background: var(--primary);
+  color: var(--white) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-back-site {
+  color: white;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  padding: 0.45rem 1.2rem;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: var(--transition);
+  text-decoration: none;
+}
+.btn-back-site:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: white;
 }
 

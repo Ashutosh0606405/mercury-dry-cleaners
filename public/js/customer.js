@@ -71,10 +71,8 @@ if (isLoginPage) {
 
   // Toggle Tab switches
   tabLogin.addEventListener('click', () => {
-    tabLogin.className = 'btn-primary';
-    tabLogin.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)';
-    tabRegister.className = 'btn-secondary';
-    tabRegister.style.background = 'none';
+    tabLogin.classList.add('active');
+    tabRegister.classList.remove('active');
     loginForm.style.display = 'block';
     registerForm.style.display = 'none';
     phoneForm.style.display = 'none';
@@ -82,10 +80,8 @@ if (isLoginPage) {
   });
 
   tabRegister.addEventListener('click', () => {
-    tabRegister.className = 'btn-primary';
-    tabRegister.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)';
-    tabLogin.className = 'btn-secondary';
-    tabLogin.style.background = 'none';
+    tabRegister.classList.add('active');
+    tabLogin.classList.remove('active');
     loginForm.style.display = 'none';
     registerForm.style.display = 'block';
     phoneForm.style.display = 'none';
