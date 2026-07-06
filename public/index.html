@@ -420,6 +420,40 @@
     </div>
   </dialog>
 
+  <!-- ===== WELCOME PROMO DIALOG ===== -->
+  <dialog id="welcome-promo-dialog" style="border: none; border-radius: 24px; padding: 0; background: transparent; max-width: 480px; width: 90%; box-shadow: var(--shadow-lg); overflow: hidden; border: 1.5px solid var(--border);">
+    <div style="background: var(--bg-body); border-radius: 22px; overflow: hidden; position: relative;">
+      <!-- Confetti Cannon Animation Background -->
+      <div class="confetti-container"></div>
+      
+      <!-- Content Container -->
+      <div style="padding: 2.5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.25rem;">
+        
+        <!-- Big Animated Icon Badge -->
+        <div class="gift-badge-wrapper">
+          <div class="gift-badge-glow"></div>
+          <div class="gift-badge-icon">🎁</div>
+        </div>
+
+        <h3 style="font-family: var(--font-heading); font-size: 1.75rem; color: var(--primary); margin: 0.5rem 0 0; line-height: 1.2;">Welcome to Mercury!</h3>
+        
+        <p style="font-size: 0.95rem; color: var(--text-dark); margin: 0; font-weight: 500; line-height: 1.5;">
+          Get your first pickup absolutely <span style="color: #16a34a; font-weight: 800; text-transform: uppercase; background: #e8f5e9; padding: 0.1rem 0.4rem; border-radius: 4px;">FREE</span>!
+        </p>
+        
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0; max-width: 320px;">
+          Your new customer promotion is active. Fill out our booking schedule on the page to claim your free doorstep collection & delivery.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%; margin-top: 0.75rem;">
+          <button id="promo-claim-btn" class="btn-book" style="width: 100%; justify-content: center; font-size: 0.95rem; padding: 0.75rem; border-radius: 12px;">Claim Free Pickup Now</button>
+          <button id="promo-close-btn" class="btn-outline-dialog" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.65rem; border-radius: 12px; border-color: rgba(53, 79, 108, 0.2);">Close</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
   <!-- ===== FOOTER ===== -->
   <footer class="main-footer">
     <div class="footer-top">
@@ -492,6 +526,73 @@
       const btn = document.getElementById('auth-nav-btn');
       if (user && btn) { btn.textContent = 'My Account'; btn.href = 'customer.html'; }
     });
+
+    // Welcome Promo Dialog for New Registrants
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('registered') === 'true') {
+      const promoDialog = document.getElementById('welcome-promo-dialog');
+      const closeBtn = document.getElementById('promo-close-btn');
+      const claimBtn = document.getElementById('promo-claim-btn');
+
+      if (promoDialog) {
+        const createConfetti = () => {
+          const container = promoDialog.querySelector('.confetti-container');
+          if (!container) return;
+          const colors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
+          for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = Math.random() * 8 + 6 + 'px';
+            particle.style.height = Math.random() * 12 + 6 + 'px';
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = -10 + 'px';
+            particle.style.borderRadius = '2px';
+            particle.style.opacity = Math.random() * 0.7 + 0.3;
+            particle.style.transform = `rotate(${Math.random() * 360}deg)`;
+            container.appendChild(particle);
+
+            const duration = Math.random() * 2 + 2;
+            particle.animate([
+              { transform: `translateY(0) rotate(0deg)`, opacity: particle.style.opacity },
+              { transform: `translateY(360px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+            ], {
+              duration: duration * 1000,
+              easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              fill: 'forwards'
+            });
+
+            setTimeout(() => particle.remove(), duration * 1000);
+          }
+        };
+
+        // Open modal
+        promoDialog.showModal();
+        createConfetti();
+
+        // Trigger confetti bursts periodically while open
+        const interval = setInterval(createConfetti, 2500);
+
+        const cleanUrlAndClose = () => {
+          clearInterval(interval);
+          promoDialog.close();
+
+          // Clean URL search param
+          const url = new URL(window.location.href);
+          url.searchParams.delete('registered');
+          window.history.replaceState({}, '', url.pathname + url.search);
+        };
+
+        closeBtn.addEventListener('click', cleanUrlAndClose);
+        claimBtn.addEventListener('click', () => {
+          cleanUrlAndClose();
+          const scheduleSection = document.getElementById('schedule');
+          if (scheduleSection) {
+            scheduleSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
+    }
   </script>
 </body>
 </html>

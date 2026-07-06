@@ -27,9 +27,18 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-function redirectAfterAuth() {
+function redirectAfterAuth(isRegistration = false) {
   const urlParams = new URLSearchParams(window.location.search);
-  const redirectPage = urlParams.get('redirect') || 'index.html';
+  let redirectPage = urlParams.get('redirect') || 'index.html';
+  if (isRegistration) {
+    try {
+      const url = new URL(redirectPage, window.location.origin);
+      url.searchParams.set('registered', 'true');
+      redirectPage = url.pathname + url.search;
+    } catch (e) {
+      redirectPage = redirectPage + (redirectPage.includes('?') ? '&' : '?') + 'registered=true';
+    }
+  }
   window.location.href = redirectPage;
 }
 
@@ -386,7 +395,7 @@ if (isLoginPage) {
         createdAt: new Date().toISOString()
       });
 
-      redirectAfterAuth();
+      redirectAfterAuth(true);
 
     } catch (err) {
       console.error(err);
