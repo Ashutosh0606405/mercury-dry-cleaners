@@ -67,17 +67,30 @@ function emailWrapper(content) {
 }
 
 // ── 1. Send Pickup Booking Confirmation ──────────────────────────────────────
-async function sendPickupConfirmation({ customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions }) {
+// ── 1. Send Pickup Booking Confirmation ──────────────────────────────────────
+async function sendPickupConfirmation({ customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions, pickupFee }) {
   const garments = Array.isArray(garmentTypes) ? garmentTypes.join(', ') : garmentTypes || 'Various garments';
+  const fee = Number(pickupFee || 0);
+
+  const feeRow = `<div class="info-row"><span class="info-label">Pickup Fee</span><span class="info-value">${fee > 0 ? `₹${fee} (Cash on Delivery)` : 'FREE (1st Booking Promotion)'}</span></div>`;
+  const feeWarningNote = fee > 0 
+    ? `<p class="text" style="color: #c2410c; background: #fff7ed; padding: 0.75rem; border-radius: 8px; border: 1px dashed #fdba74; font-size: 13px; font-weight: 500;">
+        ⚠️ <strong>Pickup Fee applied:</strong> A fee of ₹${fee} has been added as Cash on Delivery for this booking, as only your first pickup is free.
+       </p>`
+    : `<p class="text" style="color: #15803d; background: #f0fdf4; padding: 0.75rem; border-radius: 8px; border: 1px dashed #bbf7d0; font-size: 13px; font-weight: 500;">
+        🎉 <strong>First Pickup is FREE:</strong> Your promotional free pickup slot has been applied successfully!
+       </p>`;
 
   const customerHtml = emailWrapper(`
     <div class="greeting">Hi ${customerName}! 🎉</div>
-    <p class="text">Your free pickup has been scheduled. Here are your booking details:</p>
+    <p class="text">Your pickup has been scheduled. Here are your booking details:</p>
+    ${feeWarningNote}
     <div class="info-box">
       <div class="info-row"><span class="info-label">Order ID</span><span class="info-value">${orderId}</span></div>
       <div class="info-row"><span class="info-label">Pickup Date</span><span class="info-value">${pickupDate}</span></div>
       <div class="info-row"><span class="info-label">Time Window</span><span class="info-value">${pickupTime}</span></div>
       <div class="info-row"><span class="info-label">Garments</span><span class="info-value">${garmentCount} items — ${garments}</span></div>
+      ${feeRow}
       ${specialInstructions ? `<div class="info-row"><span class="info-label">Your Instructions</span><span class="info-value">${specialInstructions}</span></div>` : ''}
     </div>
     <p class="text">Our team will arrive at your door in the chosen time window. We'll SMS you 30 minutes before arrival.</p>
@@ -93,6 +106,7 @@ async function sendPickupConfirmation({ customerName, email, orderId, pickupDate
       <div class="info-row"><span class="info-label">Pickup Date</span><span class="info-value">${pickupDate}</span></div>
       <div class="info-row"><span class="info-label">Time Window</span><span class="info-value">${pickupTime}</span></div>
       <div class="info-row"><span class="info-label">Garments</span><span class="info-value">${garmentCount} items — ${garments}</span></div>
+      <div class="info-row"><span class="info-label">Pickup Fee</span><span class="info-value">₹${fee} (COD)</span></div>
       ${specialInstructions ? `<div class="info-row"><span class="info-label">Instructions</span><span class="info-value">${specialInstructions}</span></div>` : ''}
     </div>
     <p class="text">Log in to the Admin Portal to manage this booking.</p>

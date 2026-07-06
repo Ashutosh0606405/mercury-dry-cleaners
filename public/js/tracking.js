@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const detCount = document.getElementById('detail-count');
   const detTypes = document.getElementById('detail-types');
   const detSpecial = document.getElementById('detail-special');
+  const detFeeRow = document.getElementById('detail-fee-row');
+  const detFeeVal = document.getElementById('detail-fee');
 
   // Trigger search from URL query param (?id=MERC-XXXX or ?q=MERC-XXXX)
   const urlParams = new URLSearchParams(window.location.search);
@@ -117,6 +119,13 @@ document.addEventListener('DOMContentLoaded', () => {
     detPickupTime.textContent = order.pickupTime;
     detCount.textContent = `${order.garmentCount} items`;
     detTypes.textContent = order.garmentTypes.join(', ');
+
+    if (detFeeRow && detFeeVal) {
+      const fee = Number(order.pickupFee || 0);
+      detFeeVal.textContent = fee > 0 ? `₹${fee} (Cash on Delivery)` : 'FREE (1st Booking Promotion)';
+      detFeeVal.style.color = fee > 0 ? '#c2410c' : '#16a34a';
+      detFeeRow.style.display = 'flex';
+    }
     
     if (order.specialInstructions) {
       detSpecial.textContent = order.specialInstructions;

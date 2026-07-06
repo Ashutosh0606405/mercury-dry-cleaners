@@ -10,7 +10,10 @@ import {
   serverTimestamp,
   doc,
   getDoc,
-  updateDoc
+  updateDoc,
+  query,
+  where,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -47,8 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Autofill user details from Firestore
       try {
         const userDocSnap = await getDoc(doc(db, "users", user.uid));
+        let profile = {};
         if (userDocSnap.exists()) {
-          const profile = userDocSnap.data();
+          profile = userDocSnap.data();
           const nameInput = document.getElementById('customerName');
           const emailInput = document.getElementById('email');
           const phoneInput = document.getElementById('phone');
@@ -63,8 +67,41 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           }
         }
+
+        // Query pickups for this user to check if they have booked before
+        const pickupsCol = collection(db, 'pickups');
+        const qUser = query(pickupsCol, where('userId', '==', user.uid));
+        const snapUser = await getDocs(qUser);
+        
+        let hasUsedFreePickup = snapUser.size >= 1;
+
+        // Update form titles & button
+        const formTitle = document.querySelector('.booking-form-wrap .form-title');
+        const submitBtn = document.getElementById('submit-btn');
+        
+        // Remove existing notice if any
+        const oldNotice = document.getElementById('pickup-fee-notice');
+        if (oldNotice) oldNotice.remove();
+
+        if (hasUsedFreePickup) {
+          if (formTitle) formTitle.textContent = '📅 Book Your Pickup';
+          if (submitBtn) submitBtn.textContent = '🚀 Confirm Pickup Request (+₹50 fee)';
+          
+          if (bookingForm) {
+            const banner = document.createElement('div');
+            banner.id = 'pickup-fee-notice';
+            banner.className = 'ready-alert';
+            banner.style.cssText = 'display: flex; background: rgba(53, 79, 108, 0.08); border: 1.5px dashed var(--border); color: var(--text-dark); margin-bottom: 1.5rem; padding: 1rem; border-radius: 12px; font-size: 0.85rem; text-align: left;';
+            banner.innerHTML = `<div style="font-size: 1.5rem; margin-right: 0.75rem;">⚠️</div><div><strong>Pickup Fee: ₹50 Applied</strong><br>Your promotional free pickup has been used. A standard charge of ₹50 will be collected as Cash on Delivery for this booking.</div>`;
+            bookingForm.insertBefore(banner, bookingForm.firstChild);
+          }
+        } else {
+          if (formTitle) formTitle.textContent = '📅 Book Your Free Pickup';
+          if (submitBtn) submitBtn.textContent = '🚀 Confirm Free Pickup Request';
+        }
+
       } catch (err) {
-        console.error("Error auto-filling profile:", err);
+        console.error("Error auto-filling profile & checking past pickups:", err);
       }
     } else {
       if (bookingForm) bookingForm.style.display = 'none';
@@ -134,6 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const orderId = generateOrderId();
 
+    const hasNotice = !!document.getElementById('pickup-fee-notice');
+    const computedFee = hasNotice ? 50 : 0;
+
     const orderData = {
       orderId,
       userId:              auth.currentUser ? auth.currentUser.uid : null,
@@ -145,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
       garmentCount:        Number(document.getElementById('garmentCount').value),
       garmentTypes,
       specialInstructions: document.getElementById('specialInstructions').value.trim(),
+      pickupFee:           computedFee,
       status:              'pending',
       createdAt:           serverTimestamp()
     };
@@ -185,7 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
           pickupTime: orderData.pickupTime,
           garmentCount: orderData.garmentCount,
           garmentTypes: orderData.garmentTypes,
-          specialInstructions: orderData.specialInstructions
+          specialInstructions: orderData.specialInstructions,
+          pickupFee: orderData.pickupFee
         })
       })
       .then(r => r.json())

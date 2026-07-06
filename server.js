@@ -144,17 +144,24 @@ apiRouter.post('/orders/pickup', async (req, res) => {
 // 1b. Send pickup booking confirmation email & SMS (Public)
 apiRouter.post('/email/pickup-confirmation', async (req, res) => {
   try {
-    const { customerName, email, phone, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions } = req.body;
+    const { customerName, email, phone, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions, pickupFee } = req.body;
     if (!email || !orderId) {
       return res.status(400).json({ error: 'Missing required fields: email and orderId.' });
     }
     
     // Send Email
-    await sendPickupConfirmation({ customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions });
+    await sendPickupConfirmation({ customerName, email, orderId, pickupDate, pickupTime, garmentCount, garmentTypes, specialInstructions, pickupFee });
     
     // Send SMS (if phone is provided)
     if (phone) {
-      const smsBody = `Hi ${customerName}, your dry cleaning pickup is scheduled for ${pickupDate} during ${pickupTime}. A rider will arrive to collect your garments. Order ID: ${orderId}. Thanks, Mercury Dry Cleaners!`;
+      const fee = Number(pickupFee || 0);
+      let smsBody = `Hi ${customerName}, your dry cleaning pickup is scheduled for ${pickupDate} during ${pickupTime}. Order ID: ${orderId}. `;
+      if (fee > 0) {
+        smsBody += `A pickup fee of ₹${fee} is applicable (COD). `;
+      } else {
+        smsBody += `Pickup is FREE. `;
+      }
+      smsBody += `Thanks, Mercury Dry Cleaners!`;
       await sendSMS(phone, smsBody);
     }
     
