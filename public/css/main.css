@@ -316,12 +316,12 @@ img { max-width:100%; display:block; }
   animation: float2 4s ease-in-out infinite;
 }
 .tag-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.tag-1 { top:15%; left:-10%;     animation-delay:0s; }
-.tag-2 { top:5%;  right:-5%;     animation-delay:0.5s; }
-.tag-3 { top:50%; right:-15%;    animation-delay:1s; }
-.tag-4 { bottom:30%; right:-8%;  animation-delay:1.5s; }
-.tag-5 { bottom:10%; left:-5%;   animation-delay:0.8s; }
-.tag-6 { bottom:30%; left:-15%;  animation-delay:0.3s; }
+.tag-1 { top:15%; left:-5%;     animation-delay:0s; }
+.tag-2 { top:5%;  right:4%;     animation-delay:0.5s; }
+.tag-3 { top:50%; right:-4%;    animation-delay:1s; }
+.tag-4 { bottom:30%; right:0%;  animation-delay:1.5s; }
+.tag-5 { bottom:10%; left:-2%;   animation-delay:0.8s; }
+.tag-6 { bottom:30%; left:-8%;  animation-delay:0.3s; }
 
 /* ===========================
    PICKUP STRIP
