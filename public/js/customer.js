@@ -29,7 +29,7 @@ const db = getFirestore(app);
 
 function redirectAfterAuth() {
   const urlParams = new URLSearchParams(window.location.search);
-  const redirectPage = urlParams.get('redirect') || 'customer.html';
+  const redirectPage = urlParams.get('redirect') || 'index.html';
   window.location.href = redirectPage;
 }
 

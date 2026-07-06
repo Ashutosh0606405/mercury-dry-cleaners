@@ -946,3 +946,138 @@ tr:last-child td { border-bottom:none; }
   border-color: white;
 }
 
+/* ==========================================================================
+   STEPPER TRACKING TIMELINE
+   ========================================================================== */
+.stepper {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 3.5rem 0 2.5rem;
+  padding: 0 1rem;
+}
+/* Stepper track background line */
+.stepper::before {
+  content: '';
+  position: absolute;
+  top: 26px; /* center of 52px icon */
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--border);
+  z-index: 1;
+  border-radius: var(--radius-full);
+}
+.stepper-progress {
+  position: absolute;
+  top: 26px;
+  left: 0;
+  height: 4px;
+  background: var(--primary); /* Active theme color */
+  z-index: 2;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-full);
+}
+.step {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: default;
+}
+.step-icon {
+  width: 52px;
+  height: 52px;
+  background: var(--white);
+  border: 2.5px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.step-label {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: var(--transition);
+  background: var(--white);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border);
+}
+
+/* Completed Steps */
+.step.completed .step-icon {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 0 0 4px var(--primary-light);
+}
+.step.completed .step-label {
+  color: var(--primary);
+  border-color: var(--primary-light);
+}
+
+/* Active Current Step (Glowing pulsing state) */
+.step.active .step-icon {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+  box-shadow: 0 0 0 5px var(--primary-light);
+  animation: stepGlow 2s infinite ease-in-out;
+}
+.step.active .step-label {
+  color: var(--primary);
+  font-weight: 800;
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+@keyframes stepGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 4px var(--primary-light);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(53, 79, 108, 0.2);
+  }
+}
+
+/* Responsive Stepper Collapsing (Mobile viewports) */
+@media (max-width: 650px) {
+  .stepper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2.25rem;
+    padding-left: 2rem;
+    margin: 2.5rem 0;
+  }
+  .stepper::before {
+    left: 45px; /* Alignment with icons center */
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    height: auto;
+  }
+  .stepper-progress {
+    left: 45px;
+    top: 0;
+    width: 4px !important;
+  }
+  .step {
+    flex-direction: row;
+    gap: 1.25rem;
+    align-items: center;
+  }
+  .step-label {
+    text-align: left;
+  }
+}
+

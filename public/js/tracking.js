@@ -146,21 +146,25 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'pending':
       case 'scheduled':
         progressBar.style.width = '0%';
+        progressBar.style.height = '0%';
         stepScheduled.classList.add('active');
         break;
       case 'picked up':
         progressBar.style.width = '25%';
+        progressBar.style.height = '25%';
         stepScheduled.classList.add('completed');
         stepPickedUp.classList.add('active');
         break;
       case 'in cleaning':
         progressBar.style.width = '50%';
+        progressBar.style.height = '50%';
         stepScheduled.classList.add('completed');
         stepPickedUp.classList.add('completed');
         stepCleaning.classList.add('active');
         break;
       case 'ready':
         progressBar.style.width = '75%';
+        progressBar.style.height = '75%';
         stepScheduled.classList.add('completed');
         stepPickedUp.classList.add('completed');
         stepCleaning.classList.add('completed');
@@ -168,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
       case 'completed':
         progressBar.style.width = '100%';
+        progressBar.style.height = '100%';
         stepScheduled.classList.add('completed');
         stepPickedUp.classList.add('completed');
         stepCleaning.classList.add('completed');
