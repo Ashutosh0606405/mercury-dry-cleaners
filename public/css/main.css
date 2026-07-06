@@ -289,16 +289,19 @@ img { max-width:100%; display:block; }
    HERO RIGHT — Image + Tags
 =========================== */
 .hero-right {
-  position:relative;
   display:flex; align-items:center; justify-content:center;
 }
+.hero-image-wrapper {
+  position: relative;
+  width: min(480px, 90%);
+  aspect-ratio: 1;
+}
 .hero-circle {
-  width:min(480px, 90%); aspect-ratio:1;
-  background: linear-gradient(135deg, #c8def5 0%, #ddeeff 100%);
-  border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  overflow:hidden;
-  box-shadow: 0 20px 60px rgba(30,64,175,0.12);
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(30,64,175,0.06);
   animation: float1 6s ease-in-out infinite;
 }
 .hero-img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
@@ -316,12 +319,24 @@ img { max-width:100%; display:block; }
   animation: float2 4s ease-in-out infinite;
 }
 .tag-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.tag-1 { top:15%; left:-5%;     animation-delay:0s; }
-.tag-2 { top:5%;  right:4%;     animation-delay:0.5s; }
-.tag-3 { top:50%; right:-4%;    animation-delay:1s; }
-.tag-4 { bottom:30%; right:0%;  animation-delay:1.5s; }
-.tag-5 { bottom:10%; left:-2%;   animation-delay:0.8s; }
-.tag-6 { bottom:30%; left:-8%;  animation-delay:0.3s; }
+
+/* Symmetrical Orbital Coordinates around the Image Wrapper */
+.tag-1 { top: 12%; left: -45px;   animation-delay: 0s; }
+.tag-2 { top: 12%; right: -45px;  animation-delay: 0.5s; }
+.tag-3 { top: 48%; right: -85px;  animation-delay: 1s; }
+.tag-4 { bottom: 12%; right: -35px; animation-delay: 1.5s; }
+.tag-5 { bottom: 12%; left: -35px;  animation-delay: 0.8s; }
+.tag-6 { top: 48%; left: -85px;   animation-delay: 0.3s; }
+
+/* Prevent clipping of outer tags on smaller laptop screen bounds */
+@media (max-width: 1200px) {
+  .tag-1 { left: -10px; }
+  .tag-2 { right: -10px; }
+  .tag-3 { right: -30px; }
+  .tag-4 { right: -10px; }
+  .tag-5 { left: -10px; }
+  .tag-6 { left: -30px; }
+}
 
 /* ===========================
    PICKUP STRIP
