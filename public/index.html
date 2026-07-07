@@ -519,29 +519,48 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { firebaseConfig } from "./js/firebase-config.js";
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    onAuthStateChanged(auth, (user) => {
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
       const btn = document.getElementById('auth-nav-btn');
       const trackLinks = document.querySelectorAll('.track-nav-link');
       if (user) {
         if (btn) { btn.textContent = 'My Account'; btn.href = 'customer.html'; }
         trackLinks.forEach(link => link.style.display = 'block');
+
+        // Dynamically query order history to verify first-time status
+        try {
+          const pickupsQuery = query(collection(db, 'pickups'), where('userId', '==', user.uid), limit(1));
+          const pickupsSnap = await getDocs(pickupsQuery);
+          
+          const ordersQuery = query(collection(db, 'orders'), where('userId', '==', user.uid), limit(1));
+          const ordersSnap = await getDocs(ordersQuery);
+
+          // If the customer's order list is completely empty, trigger promo notice
+          if (pickupsSnap.empty && ordersSnap.empty) {
+            triggerWelcomePromo();
+          }
+        } catch (err) {
+          console.error("Error verifying order count for welcome promo:", err);
+        }
       } else {
         if (btn) { btn.textContent = 'Sign In'; btn.href = 'customer-login.html'; }
         trackLinks.forEach(link => link.style.display = 'none');
       }
     });
 
-    // Welcome Promo Dialog for New Registrants
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('registered') === 'true') {
+    // Helper to open the promo modal with zero-dependency confetti explosion
+    function triggerWelcomePromo() {
       const promoDialog = document.getElementById('welcome-promo-dialog');
       const closeBtn = document.getElementById('promo-close-btn');
       const claimBtn = document.getElementById('promo-claim-btn');
 
-      if (promoDialog) {
+      if (promoDialog && !promoDialog.open) {
         const createConfetti = () => {
           const container = promoDialog.querySelector('.confetti-container');
           if (!container) return;
@@ -584,20 +603,22 @@
           clearInterval(interval);
           promoDialog.close();
 
-          // Clean URL search param
+          // Clean URL query parameters
           const url = new URL(window.location.href);
-          url.searchParams.delete('registered');
-          window.history.replaceState({}, '', url.pathname + url.search);
+          if (url.searchParams.has('registered')) {
+            url.searchParams.delete('registered');
+            window.history.replaceState({}, '', url.pathname + url.search);
+          }
         };
 
-        closeBtn.addEventListener('click', cleanUrlAndClose);
-        claimBtn.addEventListener('click', () => {
+        closeBtn.onclick = cleanUrlAndClose;
+        claimBtn.onclick = () => {
           cleanUrlAndClose();
           const scheduleSection = document.getElementById('schedule');
           if (scheduleSection) {
             scheduleSection.scrollIntoView({ behavior: 'smooth' });
           }
-        });
+        };
       }
     }
   </script>
