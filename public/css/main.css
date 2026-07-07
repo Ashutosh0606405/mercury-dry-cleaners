@@ -1134,19 +1134,51 @@ a.btn-secondary:hover, button.btn-secondary:hover, .nav-links a.btn-secondary:ho
    WELCOME PROMO MODAL ANIMATIONS & STYLES
    ========================================================================== */
 #welcome-promo-dialog {
+  border: none;
+  border-radius: 24px;
+  padding: 0;
+  background: transparent;
+  max-width: 460px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
   opacity: 0;
-  transform: scale(0.85) translateY(20px);
   transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin: 0;
+  z-index: 10000;
 }
 #welcome-promo-dialog[open] {
   opacity: 1;
-  transform: scale(1) translateY(0);
+  transform: translate(-50%, -50%) scale(1);
 }
 #welcome-promo-dialog::backdrop {
   background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: opacity 0.4s ease;
+}
+
+/* Responsive adjustments for welcome notice dialog */
+@media (max-width: 480px) {
+  #welcome-promo-dialog {
+    max-width: 350px;
+    width: 92%;
+  }
+  #welcome-promo-dialog .promo-inner-content {
+    padding: 1.75rem 1.25rem !important;
+    gap: 1rem !important;
+  }
+  #welcome-promo-dialog h3 {
+    font-size: 1.45rem !important;
+  }
+  #welcome-promo-dialog p {
+    font-size: 0.85rem !important;
+  }
 }
 
 /* Badge Animation */
