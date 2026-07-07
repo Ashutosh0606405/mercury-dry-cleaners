@@ -24,12 +24,14 @@ onAuthStateChanged(auth, async (user) => {
   const btn = document.getElementById('auth-nav-btn');
   const orderForm = document.getElementById('orderForm');
   const authPrompt = document.getElementById('checkout-auth-prompt');
+  const trackLinks = document.querySelectorAll('.track-nav-link');
 
   if (user) {
     if (btn) {
       btn.textContent = 'My Account';
       btn.href = 'customer.html';
     }
+    trackLinks.forEach(link => link.style.display = 'block');
     if (orderForm) orderForm.style.display = 'block';
     if (authPrompt) authPrompt.style.display = 'none';
 
@@ -60,6 +62,7 @@ onAuthStateChanged(auth, async (user) => {
       btn.textContent = 'Sign In';
       btn.href = 'customer-login.html';
     }
+    trackLinks.forEach(link => link.style.display = 'none');
     if (orderForm) orderForm.style.display = 'none';
     if (authPrompt) authPrompt.style.display = 'block';
   }

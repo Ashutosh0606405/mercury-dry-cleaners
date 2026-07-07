@@ -23,7 +23,7 @@
           <li><a href="index.html">Home</a></li>
           <li><a href="index.html#services">Services</a></li>
           <li><a href="index.html#schedule">Schedule Pickup</a></li>
-          <li><a href="track.html" class="active">Track Order</a></li>
+          <li class="track-nav-link" style="display: none;"><a href="track.html" class="active">Track Order</a></li>
           <li><a href="customer-login.html" id="auth-nav-btn" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Sign In</a></li>
         </ul>
       </nav>
@@ -199,9 +199,19 @@
     const authBtn = document.getElementById('auth-nav-btn');
 
     onAuthStateChanged(auth, (user) => {
-      if (user && authBtn) {
-        authBtn.textContent = 'My Account';
-        authBtn.href = 'customer.html';
+      const trackLinks = document.querySelectorAll('.track-nav-link');
+      if (user) {
+        if (authBtn) {
+          authBtn.textContent = 'My Account';
+          authBtn.href = 'customer.html';
+        }
+        trackLinks.forEach(link => link.style.display = 'block');
+      } else {
+        if (authBtn) {
+          authBtn.textContent = 'Sign In';
+          authBtn.href = 'customer-login.html';
+        }
+        trackLinks.forEach(link => link.style.display = 'none');
       }
     });
   </script>

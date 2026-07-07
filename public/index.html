@@ -31,7 +31,7 @@
           <li><a href="#services">Services <span class="arrow">▾</span></a></li>
           <li><a href="#how-it-works">How It Works</a></li>
           <li><a href="order.html">Pricing & Order</a></li>
-          <li><a href="track.html">Track Order</a></li>
+          <li class="track-nav-link" style="display: none;"><a href="track.html">Track Order</a></li>
           <li><a href="customer-login.html" id="auth-nav-btn" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Sign In</a></li>
         </ul>
       </nav>
@@ -54,7 +54,7 @@
         <li><a href="#services">Services</a></li>
         <li><a href="#how-it-works">How It Works</a></li>
         <li><a href="#schedule">Pricing</a></li>
-        <li><a href="track.html">Track Order</a></li>
+        <li class="track-nav-link" style="display: none;"><a href="track.html">Track Order</a></li>
         <li><a href="customer-login.html">Sign In</a></li>
         <li><a href="#schedule" class="btn-cta">Book a Service</a></li>
       </ul>
@@ -524,7 +524,14 @@
     const auth = getAuth(app);
     onAuthStateChanged(auth, (user) => {
       const btn = document.getElementById('auth-nav-btn');
-      if (user && btn) { btn.textContent = 'My Account'; btn.href = 'customer.html'; }
+      const trackLinks = document.querySelectorAll('.track-nav-link');
+      if (user) {
+        if (btn) { btn.textContent = 'My Account'; btn.href = 'customer.html'; }
+        trackLinks.forEach(link => link.style.display = 'block');
+      } else {
+        if (btn) { btn.textContent = 'Sign In'; btn.href = 'customer-login.html'; }
+        trackLinks.forEach(link => link.style.display = 'none');
+      }
     });
 
     // Welcome Promo Dialog for New Registrants
