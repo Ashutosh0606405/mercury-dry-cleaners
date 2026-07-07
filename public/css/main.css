@@ -10,12 +10,12 @@
   --bg-section: #faf9f6;    /* Warm cotton white */
   --bg-alt: #e8e2d4;        /* Soft sand/khaki linen */
 
-  --primary: #354f6c;       /* Washed Denim Navy (soft, matte, organic) */
-  --primary-hover: #23374d; /* Darker denim */
+  --primary: #2b3e54;       /* Rich Denim Navy (darker, high-contrast, premium) */
+  --primary-hover: #1c2b3d; /* Darker denim */
   --primary-light: #eef3f7; /* Very soft cotton blue-gray */
 
-  --blue: #23374d;          
-  --blue-mid: #354f6c;
+  --blue: #1c2b3d;          
+  --blue-mid: #2b3e54;
   --blue-light: #eef3f7;
 
   --text-dark: #222b3c;     /* Soft black with a touch of navy */
@@ -148,7 +148,7 @@ img { max-width:100%; display:block; }
 .btn-phone {
   display:inline-flex; align-items:center; gap:0.4rem;
   font-size:0.85rem; font-weight:600; color:var(--blue);
-  border:1.5px solid var(--blue-mid);
+  border:1.5px solid var(--primary);
   padding:0.45rem 1rem; border-radius:var(--radius-full);
   transition:var(--transition);
 }
@@ -225,14 +225,14 @@ img { max-width:100%; display:block; }
   margin-bottom: 1.25rem;
   animation: slideUp 0.6s ease 0.1s both;
 }
-.title-blue { color: var(--blue-mid); }
+.title-blue { color: var(--primary); }
 
 /* City typing */
 .hero-city {
   font-size:1rem; color:var(--text-mid); margin-bottom:2rem; font-weight:500;
   animation: slideUp 0.6s ease 0.2s both;
 }
-.typed-city { color:var(--blue-mid); font-size:1.05rem; }
+.typed-city { color:var(--primary); font-size:1.05rem; }
 .cursor {
   display:inline-block; color:var(--primary);
   animation: blink 0.9s step-end infinite;
@@ -768,7 +768,7 @@ tr:last-child td { border-bottom:none; }
 
 /* Stats Counter Color Branding */
 #stat-total { color: var(--text-dark) !important; }
-#stat-scheduled { color: var(--blue-mid) !important; }
+#stat-scheduled { color: var(--primary) !important; }
 #stat-cleaning { color: #7c3aed !important; } /* Violet */
 #stat-ready { color: #059669 !important; } /* Emerald */
 
