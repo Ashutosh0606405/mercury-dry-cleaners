@@ -752,7 +752,7 @@ tr:last-child td { border-bottom:none; }
 /* Professional Cards / Panels */
 .glass-panel {
   background: var(--white);
-  border: 1.5px dashed var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   padding: 1.5rem;
@@ -1214,9 +1214,9 @@ a.btn-secondary:hover, button.btn-secondary:hover, .nav-links a.btn-secondary:ho
   color: var(--text-muted);
   transition: var(--transition);
   background: var(--white);
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-sm);
-  border: 1px dashed var(--border);
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border);
 }
 
 /* Completed Steps */
@@ -1228,7 +1228,8 @@ a.btn-secondary:hover, button.btn-secondary:hover, .nav-links a.btn-secondary:ho
 }
 .step.completed .step-label {
   color: var(--primary);
-  border-color: var(--primary-light);
+  border-color: var(--primary);
+  background: rgba(43, 62, 84, 0.05);
 }
 
 /* Active Current Step (Glowing pulsing state) */
@@ -1244,6 +1245,7 @@ a.btn-secondary:hover, button.btn-secondary:hover, .nav-links a.btn-secondary:ho
   font-weight: 800;
   border-color: var(--primary);
   background: var(--primary-light);
+  box-shadow: 0 4px 12px rgba(53, 79, 108, 0.1);
 }
 
 @keyframes stepGlow {
@@ -1394,3 +1396,53 @@ a.btn-secondary:hover, button.btn-secondary:hover, .nav-links a.btn-secondary:ho
   z-index: 0;
 }
 
+/* ==========================================================================
+   TRACKING PAGE SEARCH BAR CAPSULE
+   ========================================================================== */
+.search-bar {
+  display: flex;
+  align-items: center;
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+  background: white;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border);
+  padding: 0.35rem 0.35rem 0.35rem 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+.search-bar:focus-within {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.search-bar::before {
+  content: '🔍';
+  font-size: 1rem;
+  opacity: 0.7;
+}
+.search-bar input {
+  flex: 1;
+  border: none !important;
+  background: transparent !important;
+  padding: 0.65rem 0.75rem !important;
+  font-size: 0.95rem;
+  outline: none !important;
+  box-shadow: none !important;
+  color: var(--text-dark);
+}
+.search-bar button {
+  border-radius: var(--radius-full) !important;
+  padding: 0.7rem 1.75rem !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  cursor: pointer;
+  background: var(--primary);
+  color: white;
+  border: none;
+  transition: all 0.2s ease;
+}
+.search-bar button:hover {
+  background: var(--primary-dark);
+}
