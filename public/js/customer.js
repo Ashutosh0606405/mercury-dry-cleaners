@@ -468,6 +468,11 @@ if (isDashboardPage) {
       profEmail.textContent = email;
       profPhone.textContent = displayPhone || '—';
 
+      const avatarBadge = document.getElementById('customer-avatar-badge');
+      if (avatarBadge && name && name.trim()) {
+        avatarBadge.textContent = name.trim().charAt(0).toUpperCase();
+      }
+
       // 2. Fetch Customer Orders: Query across both collections using user.uid, email, and phone number variants
       const ordersCol = collection(db, "orders");
       const pickupsCol = collection(db, "pickups");
@@ -560,23 +565,23 @@ if (isDashboardPage) {
           switch ((order.status || '').toLowerCase()) {
             case 'pending':
             case 'scheduled': 
-              badgeClass = 'badge-scheduled'; 
+              badgeClass = 'badge-status badge-status-pending'; 
               badgeLabel = 'Scheduled';
               break;
             case 'picked up': 
-              badgeClass = 'badge-pickedup'; 
+              badgeClass = 'badge-status badge-status-cleaning'; 
               badgeLabel = 'Picked Up';
               break;
             case 'in cleaning': 
-              badgeClass = 'badge-cleaning'; 
+              badgeClass = 'badge-status badge-status-cleaning'; 
               badgeLabel = 'In Cleaning';
               break;
             case 'ready': 
-              badgeClass = 'badge-ready'; 
+              badgeClass = 'badge-status badge-status-ready'; 
               badgeLabel = 'Ready';
               break;
             case 'completed': 
-              badgeClass = 'badge-completed'; 
+              badgeClass = 'badge-status badge-status-completed'; 
               badgeLabel = 'Completed';
               break;
           }
