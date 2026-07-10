@@ -191,6 +191,68 @@ function setupForm() {
   const dialogId  = document.getElementById('dialogOrderId');
   const dialogTot = document.getElementById('dialogTotal');
 
+  // Geolocation Autofill Setup
+  const detectLocBtn = document.getElementById('btn-detect-location');
+  const addressTextarea = document.getElementById('custAddress');
+
+  if (detectLocBtn && addressTextarea) {
+    detectLocBtn.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+
+      detectLocBtn.disabled = true;
+      detectLocBtn.innerHTML = '⏳ Accessing...';
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          detectLocBtn.innerHTML = '⏳ Loading Address...';
+
+          try {
+            // Fetch reverse-geocoded address from OpenStreetMap Nominatim
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+            const data = await res.json();
+            
+            if (data && data.display_name) {
+              addressTextarea.value = data.display_name;
+              detectLocBtn.innerHTML = '📍 Location Found!';
+              // Clear validation error style if any
+              addressTextarea.removeAttribute('aria-invalid');
+            } else {
+              alert("Could not retrieve a readable address for your coordinates.");
+              detectLocBtn.innerHTML = '📍 Autofill Location';
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Error retrieving address from reverse geocoder.");
+            detectLocBtn.innerHTML = '📍 Autofill Location';
+          } finally {
+            detectLocBtn.disabled = false;
+            // Reset button text after a delay
+            setTimeout(() => {
+              detectLocBtn.innerHTML = '📍 Autofill Location';
+            }, 3000);
+          }
+        },
+        (error) => {
+          console.error(error);
+          let msg = "Failed to access location.";
+          if (error.code === error.PERMISSION_DENIED) {
+            msg = "Location permission was denied by your browser.";
+          }
+          alert(msg);
+          detectLocBtn.innerHTML = '📍 Autofill Location';
+          detectLocBtn.disabled = false;
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    });
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 

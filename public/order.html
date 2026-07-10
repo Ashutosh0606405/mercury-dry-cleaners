@@ -366,8 +366,13 @@
           <label for="custEmail">Email Address</label>
           <input type="email" id="custEmail" name="email" placeholder="you@example.com" required>
         </div>
-        <div class="form-group">
-          <label for="custAddress">Pickup Address</label>
+        <div class="form-group" style="position: relative;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+            <label for="custAddress" style="margin-bottom: 0; font-weight: 600;">Pickup Address</label>
+            <button type="button" id="btn-detect-location" style="background: none; border: none; color: var(--primary); font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border-radius: 4px; transition: background 0.2s;">
+              📍 Autofill Location
+            </button>
+          </div>
           <textarea id="custAddress" name="address" placeholder="Flat no, street, area, Delhi…" required></textarea>
         </div>
 
