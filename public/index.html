@@ -623,5 +623,40 @@
       }
     }
   </script>
+
+  <!-- ===== COOKIE CONSENT BANNER ===== -->
+  <div id="cookie-consent" class="cookie-banner">
+    <div class="cookie-content">
+      <p><strong>Cookie Consent:</strong> We use cookies to ensure that we give you the best experience on our website. Read our <a href="#" style="color:var(--primary); text-decoration:underline;">Cookie Policy</a>.</p>
+    </div>
+    <div class="cookie-actions">
+      <button id="cookie-decline" class="btn-cookie-decline">Decline</button>
+      <button id="cookie-accept" class="btn-cookie-accept">Accept</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const banner = document.getElementById('cookie-consent');
+      const acceptBtn = document.getElementById('cookie-accept');
+      const declineBtn = document.getElementById('cookie-decline');
+
+      const consent = localStorage.getItem('cookieConsent');
+      if (!consent) {
+        setTimeout(() => {
+          banner.classList.add('show');
+        }, 1500);
+      }
+
+      const handleChoice = (choice) => {
+        localStorage.setItem('cookieConsent', choice);
+        banner.classList.remove('show');
+      };
+
+      if (acceptBtn) acceptBtn.onclick = () => handleChoice('accepted');
+      if (declineBtn) declineBtn.onclick = () => handleChoice('declined');
+    });
+  </script>
 </body>
 </html>
+
